@@ -81,8 +81,7 @@ bot.dialog('/', [
                 // var unlock = result.Status._;
                 if(!error ) {
         
-                    session.send(`¿Deseas adjutar documentación o evidencia?`);
-                    session.endDialog(`Hemos terminado gracias`);
+                    builder.Prompts.choice(session, '¿Deseas adjuntar documentación o evidencia?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
                 }
                 else{
                     session.endDialog("**Error:**");
@@ -92,6 +91,22 @@ bot.dialog('/', [
             // El díalogo existe inicia si el usuario presiona Resetear contraseña
             case Choice.No:
             session.endDialog('Por favor vuelve a introducir correctamente la información.');
+            break;
+        }
+        
+    },
+    function (session, results) {
+        var selection2 = results.response.entity;
+        switch (selection2) {
+            // El díalogo desbloqueo inicia si el usuario presiona Desbloquear cuenta
+            case Choice.Si:
+            // return session.beginDialog('viaticos');
+            session.endDialog('Se adjuntó la evidencia correctamente. \n Por ahora hemos terminado, saludos.');
+            
+            break;
+            // El díalogo existe inicia si el usuario presiona Resetear contraseña
+            case Choice.No:
+            session.endDialog('Ha concluido esta actividad, saludos.');
             break;
         }
         
