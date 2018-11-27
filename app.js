@@ -13,7 +13,7 @@ var blobService = azurest.createBlobService("botdyesa01", "+F+IpcFtKyi6jrCm05KMC
 // Setup Restify Server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
+//    console.log('%s listening to %s', server.name, server.url); 
 });
   
 // Create chat connector for communicating with the Bot Framework Service
@@ -137,6 +137,7 @@ bot.dialog('/', [
                     // console.log(body);
                     // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     var matches = body.split(',');
+                    console.log(body);
                     console.log(matches[1]);
                     var buffer = new Buffer(matches[1], 'base64');
                     blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, {contentType:attachment.contentType}, function(error, result, response) {
