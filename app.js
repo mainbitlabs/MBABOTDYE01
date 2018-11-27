@@ -134,9 +134,9 @@ bot.dialog('/', [
 
             base64Img.requestBase64(url, function(err, res, body) {
                 if (!err) {
-                    console.log(body);
                     // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     var matches = body.split(',');
+                    console.log(matches[1]);
                     var buffer = new Buffer(matches[1], 'base64');
                     blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, {contentType:attachment.contentType}, function(error, result, response) {
                         if (!error) {
