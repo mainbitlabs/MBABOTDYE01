@@ -136,9 +136,8 @@ bot.dialog('/', [
                 if (!err) {
                     console.log(body);
                     var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-                    var type = matches[1];
                     var buffer = new Buffer(matches[2], 'base64');
-                    blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, {contentType:type}, function(error, result, response) {
+                    blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, {contentType:attachment.contentType}, function(error, result, response) {
                         if (!error) {
                             console.log('El archivo subió correctamente al blob storage.');
                             
