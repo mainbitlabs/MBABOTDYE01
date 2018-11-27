@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "azure-storage": "^2.10.2",
+    "base64-img": "^1.0.4",
     "botbuilder": "^3.13.1",
     "botbuilder-azure": "^3.0.4",
     "restify": "^5.0.0"

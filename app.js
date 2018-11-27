@@ -7,6 +7,7 @@ var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var azurest = require('azure-storage');
 var tableService = azurest.createTableService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
+var blobService = azurest.createBlobService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -44,6 +45,7 @@ var Choice = {
     No: 'No'
  };
 // El díalogo principal inicia aquí
+
 bot.dialog('/', [
     
     function (session, results, next) {
@@ -101,7 +103,8 @@ bot.dialog('/', [
             // El díalogo desbloqueo inicia si el usuario presiona Desbloquear cuenta
             case Choice.Si:
             // return session.beginDialog('viaticos');
-            session.endDialog('Se adjuntó la evidencia correctamente. \n Por ahora hemos terminado, saludos.');
+            builder.Prompts.attachment(session, '**Adjunta aquí la evidencia**')
+            // session.endDialog('Se adjuntó la evidencia correctamente. \n Por ahora hemos terminado, saludos.');
             
             break;
             // El díalogo existe inicia si el usuario presiona Resetear contraseña
@@ -110,5 +113,48 @@ bot.dialog('/', [
             break;
         }
         
+    },
+    function (session, results) {
+        var msg = session.message;
+        if (msg.attachments && msg.attachments.length > 0) {
+            // Echo back attachment
+            var attachment = msg.attachments[0];
+            session.send({
+                "attachments": [
+                    {
+                    "contentType": attachment.contentType,
+                    "contentUrl": attachment.contentUrl,
+                    "name": attachment.name
+                    }
+                ],});
+                
+            var url = attachment.contentUrl;
+            session.send(url);
+
+            base64Img.requestBase64(url, function(err, res, body) {
+                if (!err) {
+                    // console.log(body);
+                    var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                    var type = matches[1];
+                    var buffer = new Buffer(matches[2], 'base64');
+                    blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, {contentType:type}, function(error, result, response) {
+                        if (!error) {
+                            console.log('El archivo subió correctamente al blob storage.');
+                            
+                        }
+                        else{
+                            console.log('Hubo un error: '+ error);
+                            
+                        }
+                    });
+                }
+                        
+            });
+            
+        } else {
+                // Echo back users text
+                session.send("You said: %s", session.message.text);
+        }
+
     }
 ]);
