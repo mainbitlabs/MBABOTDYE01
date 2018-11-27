@@ -142,7 +142,7 @@ bot.dialog('/', [
                     var buffer = new Buffer(matches[1], 'base64');
                     blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, { contentSettings: { contentType: attachment.contentType } }, function(error, result, response) {
                         if (!error) {
-                            console.log('El archivo subió correctamente al blob storage.');
+                            console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
                             
                         }
                         else{
