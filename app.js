@@ -130,11 +130,11 @@ bot.dialog('/', [
                 ],});
                 
             var url = attachment.contentUrl;
-            session.send(url);
+            console.log(url);
 
             base64Img.requestBase64(url, function(err, res, body) {
                 if (!err) {
-                    // console.log(body);
+                    console.log(body);
                     var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     var type = matches[1];
                     var buffer = new Buffer(matches[2], 'base64');
