@@ -130,7 +130,7 @@ bot.dialog('/', [
                 ],});
                 
             var url = attachment.contentUrl;
-            console.log(url);
+            session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
 
             base64Img.requestBase64(url, function(err, res, body) {
                 if (!err) {
