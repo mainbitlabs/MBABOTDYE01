@@ -133,15 +133,12 @@ bot.dialog('/', [
                 
             var url = attachment.contentUrl;
             session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
-
-            base64Img.requestBase64(url, function(err, res, body) {
-                if (!err) {
-                    // console.log(body);
-                    // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-                    var matches = body.split(',');
-                    console.log(res);
-                    console.log(matches[0]);
-                    var buffer = new Buffer(matches[1], 'base64');
+ 
+            image2base64(url)
+                .then(
+                    (response) => {
+                        // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
+                        var buffer = new Buffer(response, 'base64');
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
@@ -152,9 +149,34 @@ bot.dialog('/', [
                             
                         }
                     });
-                }
+                    }
+                )
+                .catch(
+                    (error) => {
+                        console.log(error); //Exepection error....
+                    }
+                );
+            // base64Img.requestBase64(url, function(err, res, body) {
+            //     if (!err) {
+            //         // console.log(body);
+            //         // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+            //         var matches = body.split(',');
+            //         console.log(res);
+            //         console.log(matches[0]);
+            //         var buffer = new Buffer(matches[1], 'base64');
+            //         blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
+            //             if (!error) {
+            //                 console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
+                            
+            //             }
+            //             else{
+            //                 console.log('Hubo un error: '+ error);
+                            
+            //             }
+            //         });
+            //     }
                         
-            });
+            // });
             
         } else {
                 // Echo back users text
