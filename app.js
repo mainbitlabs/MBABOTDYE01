@@ -6,6 +6,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var base64Img = require('base64-img');
+var image2base64 = require('image-to-base64');
 var azurest = require('azure-storage');
 var config = require('./config');
 var tableService = azurest.createTableService(config.storageA, config.accessK);
