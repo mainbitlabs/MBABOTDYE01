@@ -6,9 +6,10 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var base64Img = require('base64-img');
-var azurest = require('./config');
-var tableService = azurest.createTableService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
-var blobService = azurest.createBlobService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
+var azurest = require('azure-storage');
+var config = require('./config');
+var tableService = azurest.createTableService(config.storageA, config.accessK);
+var blobService = azurest.createBlobService(config.storageA,config.accessK);
 
 // Setup Restify Server
 var server = restify.createServer();
