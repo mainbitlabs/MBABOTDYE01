@@ -144,7 +144,7 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(`El archivo ${session.dialogData.ticket}_${attachment.name}.${ctype} se ha subido correctamente`);
                             
