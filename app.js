@@ -134,7 +134,7 @@ bot.dialog('/', [
 
             var stype = attachment.contentType.split('/');
             var ctype = stype[1];
-            console.log(ctype);
+            session.send(ctype);
             var url = attachment.contentUrl;
 
             session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
