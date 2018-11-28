@@ -5,7 +5,6 @@ A simple echo bot for the Microsoft Bot Framework.
 var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
-var base64Img = require('base64-img');
 var image2base64 = require('image-to-base64');
 var azurest = require('azure-storage');
 var config = require('./config');
@@ -47,14 +46,19 @@ var Choice = {
     Si: 'Sí',
     No: 'No'
  };
+
+var time;
+
 // El díalogo principal inicia aquí
-
-
 bot.dialog('/', [
     
     function (session, results, next) {
         // Primer diálogo    
-        builder.Prompts.text(session, '¿Cuál es el número de serie que deseas revisar?')
+        builder.Prompts.text(session, '¿Cuál es el número de serie que deseas revisar?');
+        session.send(`**Sugerencia:** Si por alguna razón necesitas volver a iniciar o cancelar la operación introduce el texto **cancelar.** \n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
+        time = setTimeout(() => {
+            session.endDialog(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
+        }, 300000);
     },
     function (session, results) {
         // Segundo diálogo
@@ -144,7 +148,7 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name+'.'+ctype, buffer,  function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_Resguardo.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(`El archivo ${session.dialogData.ticket}_${attachment.name}.${ctype} se ha subido correctamente`);
                             
@@ -161,27 +165,6 @@ bot.dialog('/', [
                         console.log(error); //Exepection error....
                     }
                 );
-            // base64Img.requestBase64(url, function(err, res, body) {
-            //     if (!err) {
-            //         // console.log(body);
-            //         // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            //         var matches = body.split(',');
-            //         console.log(res);
-            //         console.log(matches[0]);
-            //         var buffer = new Buffer(matches[1], 'base64');
-            //         blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
-            //             if (!error) {
-            //                 console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
-                            
-            //             }
-            //             else{
-            //                 console.log('Hubo un error: '+ error);
-                            
-            //             }
-            //         });
-            //     }
-                        
-            // });
             
         } else {
                 // Echo back users text
@@ -190,3 +173,13 @@ bot.dialog('/', [
 
     }
 ]);
+// Cancela la operación en cualquier momento
+bot.dialog('cancel',
+    function (session) {
+        clearTimeout(time);
+        session.endConversation('No hay problema, volvamos a iniciar de nuevo.');
+        session.replaceDialog('/');
+    }
+).triggerAction(
+    {matches: /(cancel|cancelar)/gi}
+);
