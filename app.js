@@ -6,7 +6,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var base64Img = require('base64-img');
-var azurest = require('azure-storage');
+var azurest = require('./config');
 var tableService = azurest.createTableService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
 var blobService = azurest.createBlobService("botdyesa01", "+F+IpcFtKyi6jrCm05KMCPYfIuG2J+ezhnAgqTvtwVAYKb/rmJvOKp4KuJ+Q44ie0HhPMKaFk3sSjvweQ/31Kw==");
 
@@ -47,6 +47,7 @@ var Choice = {
  };
 // El díalogo principal inicia aquí
 
+
 bot.dialog('/', [
     
     function (session, results, next) {
@@ -61,7 +62,7 @@ bot.dialog('/', [
     function (session, results) {
         session.dialogData.asociado = results.response;
         // Tercer diálogo
-        tableService.retrieveEntity("botdyesatb01", session.dialogData.asociado, session.dialogData.ticket, function(error, result, response) {
+        tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.ticket, function(error, result, response) {
             // var unlock = result.Status._;
             if(!error ) {
     
@@ -80,7 +81,7 @@ bot.dialog('/', [
             case Choice.Si:
             // return session.beginDialog('viaticos');
             
-            tableService.retrieveEntity("botdyesatb01", session.dialogData.asociado, session.dialogData.ticket, function(error, result, response) {
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.ticket, function(error, result, response) {
                 // var unlock = result.Status._;
                 if(!error ) {
         
@@ -137,10 +138,10 @@ bot.dialog('/', [
                     // console.log(body);
                     // var matches = body.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     var matches = body.split(',');
-                    console.log(body);
-                    console.log(matches[1]);
+                    console.log(res);
+                    console.log(matches[0]);
                     var buffer = new Buffer(matches[1], 'base64');
-                    blobService.createBlockBlobFromText('botdyesabl',session.dialogData.ticket+'_'+attachment.name, buffer, { contentSettings: { contentType: attachment.contentType } }, function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
                             
