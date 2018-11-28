@@ -131,8 +131,12 @@ bot.dialog('/', [
                     "name": attachment.name
                     }
                 ],});
-                
+
+            var stype = attachment.contentType.split('/');
+            var ctype = stype[1];
+            console.log(ctype);
             var url = attachment.contentUrl;
+
             session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
  
             image2base64(url)
@@ -142,7 +146,7 @@ bot.dialog('/', [
                         var buffer = new Buffer(response, 'base64');
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.ticket+'_'+attachment.name, buffer,  function(error, result, response) {
                         if (!error) {
-                            console.log(`El archivo ${session.dialogData.ticket}_${attachment.name} se ha subido correctamente`);
+                            console.log(`El archivo ${session.dialogData.ticket}_${attachment.name}.${ctype} se ha subido correctamente`);
                             
                         }
                         else{
