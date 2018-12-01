@@ -47,7 +47,6 @@ var Choice = {
     No: 'No'
  };
 
-var time;
 var Opts = {
     Resguardo : 'Resguardo',
     Check: 'Check',
@@ -56,151 +55,304 @@ var Opts = {
  };
  
  var time;
- 
- // El díalogo principal inicia aquí
- bot.dialog('/', [
-     
-     function (session, results, next) {
-         // Primer diálogo    
-         session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
-         session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
-         time = setTimeout(() => {
-             session.endDialog(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
-         }, 300000);
-         builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
-     },
-     function (session, results) {
-         // Segundo diálogo
-         session.dialogData.serie = results.response;
-         builder.Prompts.text(session, '¿Cuál es tu **Clave de Asociado**?')
-     },
-     function (session, results) {
-         session.dialogData.asociado = results.response;
-         // Tercer diálogo
-         tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
-             if(!error ) {
-                 session.dialogData.proyecto= result.Proyecto._;
-                 session.send(`Esta es la información relacionada:`);
-                 session.send(`**Proyecto:** ${result.Proyecto._} \n **Número de Serie**: ${result.RowKey._} \n **Asociado:** ${result.PartitionKey._}  \n  **Descripción:** ${result.Descripcion._} \n  **Localidad:** ${result.Localidad._} \n  **Inmueble:** ${result.Inmueble._} \n  **Servicio:** ${result.Servicio._} \n  **Estatus:** ${result.Status._} \n  **Resguardo:** ${result.Resguardo._} \n  **Check:** ${result.Check._} \n  **Borrado:** ${result.Borrado._} \n  **Baja:** ${result.Baja._}`);
-                 builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
-             }
-             else{
-                 session.endDialog("**Error** La serie no coincide con el Asociado.");
-             }
-         });
-     },
-     function (session, results) {
-         // Cuarto diálogo
-         var selection = results.response.entity;
-         switch (selection) {
-             
-             case Choice.Si:
-             builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
-             break;
- 
-             case Choice.No:
-             session.endDialog("Por favor valida con tu soporte que el Número de Serie esté asignado a tu Asociado");
-             break;
-         }
-         
-     },
-     function (session, results) {
-         // Cuarto diálogo
-         
-             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check, Opts.Borrado, Opts.Baja], { listStyle: builder.ListStyle.button });  
-     },
-     function (session, results) {
-         var selection2 = results.response.entity;
-         session.dialogData.tipo = selection2;
-         switch (selection2) {
-             case Opts.Resguardo:
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`)
-             break;
-             case Opts.Borrado:
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`)
-             break;
-             case Opts.Baja:
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`)
-             break;
-             case Opts.Check:
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`)
-             break;
- 
-          
-         }
-         
-     },
-     function (session, results) {
-         var msg = session.message;
-         if (msg.attachments && msg.attachments.length > 0) {
-             // Echo back attachment
-             var attachment = msg.attachments[0];
-             session.send({
-                 "attachments": [
-                     {
-                     "contentType": attachment.contentType,
-                     "contentUrl": attachment.contentUrl,
-                     "name": attachment.name
-                     }
-                 ],});
- 
-             var stype = attachment.contentType.split('/');
-             var ctype = stype[1];
-             var url = attachment.contentUrl;
-             // session.send(ctype);
-             // session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
-             // Se pasa la imagen a base64
-             image2base64(url)
-                 .then(
-                     (response) => {
-                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
-                         var buffer = new Buffer(response, 'base64');
-                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
-                         if (!error) {
-                             // var updateStatus = {
-                             //     PartitionKey : {'_': session.dialogData.asociado, '$':'Edm.String'},
-                             //     RowKey: {'_': session.dialogData.serie, '$':'Edm.String'},
-                             //     Proyecto: {'_': session.dialogData.proyecto, '$':'Edm.String'},
-                             //     Status: {'_': 'Completado', '$':'Edm.String'}
-                             // };
-                             
-                             // tableService.insertOrReplaceEntity(config.table1, updateStatus, function(error, result, response) {
-                             //     if (!error) {
-                             //         session.send(`se actualizo el __Status__ a __Completado__`);
-                                     
-                             //     }
-                             // });
-                             
-                             session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
-                             session.send(`**Hemos concluido por ahora.**`);
-                         }
-                         else{
-                             console.log('Hubo un error: '+ error);
-                             
-                         }
-                     });
-                     }
-                 )
-                 .catch(
-                     (error) => {
-                         console.log(error); //Exepection error....
-                     }
-                 );
-             
-         } else {
-                 // Echo back users text
-                 session.send("You said: %s", session.message.text);
-         }
- 
-     }
- ]);
- // Cancela la operación en cualquier momento
- bot.dialog('cancel',
-     function (session) {
-         clearTimeout(time);
-         session.endConversation('No hay problema, volvamos a iniciar de nuevo.');
-         session.replaceDialog('/');
-     }
- ).triggerAction(
-     {matches: /(cancel|cancelar)/gi}
- );
+ var descriptor = {};
+// El díalogo principal inicia aquí
+bot.dialog('/', [
+    
+    function (session) {
+        // Primer diálogo    
+        session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
+        session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
+        builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
+        time = setTimeout(() => {
+            session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
+        }, 300000);
+    },
+    function (session, results) {
+        // Segundo diálogo
+        session.dialogData.serie = results.response;
+        builder.Prompts.text(session, '¿Cuál es tu **Clave de Asociado**?')
+    },
+    function (session, results) {
+        session.dialogData.asociado = results.response;
+        // Tercer diálogo
+        tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
+            if(!error ) {
+                session.dialogData.proyecto= result.Proyecto._;
+                session.send(`Esta es la información relacionada:`);
+                session.send(`**Proyecto:** ${result.Proyecto._} \n **Número de Serie**: ${result.RowKey._} \n **Asociado:** ${result.PartitionKey._}  \n  **Descripción:** ${result.Descripcion._} \n  **Localidad:** ${result.Localidad._} \n  **Inmueble:** ${result.Inmueble._} \n  **Servicio:** ${result.Servicio._} \n  **Estatus:** ${result.Status._} \n  **Resguardo:** ${result.Resguardo._} \n  **Check:** ${result.Check._} \n  **Borrado:** ${result.Borrado._} \n  **Baja:** ${result.Baja._}`);
+                builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
+            }
+            else{
+                session.endConversation("**Error** La serie no coincide con el Asociado.");
+            }
+        });
+    },
+    function (session, results) {
+        // Cuarto diálogo
+        var selection = results.response.entity;
+        switch (selection) {
+            
+            case Choice.Si:
+            builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
+            break;
+
+            case Choice.No:
+            session.endConversation("Por favor valida con tu soporte que el Número de Serie esté asignado a tu Asociado");
+            break;
+        }
+        
+    },
+    function (session, results) {
+        // Cuarto diálogo
+        var selection3 = results.response.entity;
+        switch (selection3) {
+            
+            case Choice.Si:
+            builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check, Opts.Borrado, Opts.Baja], { listStyle: builder.ListStyle.button });  
+            break;
+
+            case Choice.No:
+            session.endConversation("De acuerdo, hemos terminado por ahora");
+            break;
+        }
+        
+    },
+    function (session, results) {
+        // Quinto diálogo
+        var selection2 = results.response.entity;
+        session.dialogData.tipo = selection2;
+        session.dialogData.descriptor ={};
+        switch (selection2) {
+
+            case Opts.Resguardo:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
+        
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Resguardo= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+            
+               
+            break;
+
+            case Opts.Borrado:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
+
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Borrado= {'_': 'Borrado Adjunto', '$':'Edm.String'};
+
+            break;
+
+            case Opts.Baja:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
+
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Baja= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+               
+                break;
+
+            case Opts.Check:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
+           
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Check= {'_': 'Check Adjunto', '$':'Edm.String'};
+           
+                
+            break;
+        }
+        
+    },
+    function (session) {
+        console.log('Sexto dialogo \n'+ descriptor);
+        // Sexto diálogo
+        var msg = session.message;
+        if (msg.attachments && msg.attachments.length > 0) {
+            // Echo back attachment
+            var attachment = msg.attachments[0];
+            session.send({
+                "attachments": [
+                    {
+                    "contentType": attachment.contentType,
+                    "contentUrl": attachment.contentUrl,
+                    "name": attachment.name
+                    }
+                ],});
+
+            var stype = attachment.contentType.split('/');
+            var ctype = stype[1];
+            var url = attachment.contentUrl;
+            // session.send(ctype);
+            // session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
+            // Se pasa la imagen a base64
+            image2base64(url)
+                .then(
+                    (response) => {
+                        // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
+                        var buffer = new Buffer(response, 'base64');
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
+                        if (!error) {
+                            
+                            // tableService.mergeEntity(config.table1, descriptor, function (error,result,response) {
+                            //     if (!error) {
+                            //         console.log('entity property Resguardo updated');
+                                    
+                            //     }
+                            // });
+                           
+                            session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                            builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
+                        }
+                        else{
+                            console.log('Hubo un error: '+ error);
+                            
+                        }
+                    });
+                    }
+                )
+                .catch(
+                    (error) => {
+                        console.log(error); //Exepection error....
+                    }
+                );
+            
+        } else {
+                // Echo back users text
+                session.send("Enviaste esto en ves de una imagen: %s", session.message.text);
+        }
+
+    },
+    function (session, results) {
+        // Cuarto diálogo
+        var selection3 = results.response.entity;
+        switch (selection3) {
+            
+            case Choice.Si:
+            builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check, Opts.Borrado, Opts.Baja], { listStyle: builder.ListStyle.button });  
+            break;
+
+            case Choice.No:
+            session.endConversation("De acuerdo, hemos terminado por ahora");
+            break;
+        }
+        
+    },
+    function (session, results) {
+        // Quinto diálogo
+        var selection2 = results.response.entity;
+        session.dialogData.tipo = selection2;
+        session.dialogData.descriptor ={};
+        switch (selection2) {
+
+            case Opts.Resguardo:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
+        
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Resguardo= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+            
+               
+            break;
+
+            case Opts.Borrado:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
+
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Borrado= {'_': 'Borrado Adjunto', '$':'Edm.String'};
+
+            break;
+
+            case Opts.Baja:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
+
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Baja= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+               
+                break;
+
+            case Opts.Check:
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
+           
+                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
+                descriptor.Check= {'_': 'Check Adjunto', '$':'Edm.String'};
+           
+                
+            break;
+        }
+        
+    },
+    function (session) {
+        console.log('Sexto dialogo \n'+ descriptor);
+        // Sexto diálogo
+        var msg = session.message;
+        if (msg.attachments && msg.attachments.length > 0) {
+            // Echo back attachment
+            var attachment = msg.attachments[0];
+            session.send({
+                "attachments": [
+                    {
+                    "contentType": attachment.contentType,
+                    "contentUrl": attachment.contentUrl,
+                    "name": attachment.name
+                    }
+                ],});
+
+            var stype = attachment.contentType.split('/');
+            var ctype = stype[1];
+            var url = attachment.contentUrl;
+            // session.send(ctype);
+            // session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
+            // Se pasa la imagen a base64
+            image2base64(url)
+                .then(
+                    (response) => {
+                        // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
+                        var buffer = new Buffer(response, 'base64');
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
+                        if (!error) {
+                            
+                            // tableService.mergeEntity(config.table1, descriptor, function (error,result,response) {
+                            //     if (!error) {
+                            //         console.log('entity property Resguardo updated');
+                                    
+                            //     }
+                            // });
+                           
+                            session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                            session.endConversation('Hemos terminado por ahora');
+                        }
+                        else{
+                            console.log('Hubo un error: '+ error);
+                            
+                        }
+                    });
+                    }
+                )
+                .catch(
+                    (error) => {
+                        console.log(error); //Exepection error....
+                    }
+                );
+            
+        } else {
+                // Echo back users text
+                session.send("Enviaste esto en ves de una imagen: %s", session.message.text);
+        }
+
+    }
+]);
+// Cancela la operación en cualquier momento
+bot.dialog('cancel',
+    function (session) {
+        clearTimeout(time);
+        session.endConversation('No hay problema, volvamos a iniciar de nuevo.');
+        session.replaceDialog('/');
+    }
+).triggerAction(
+    {matches: /(cancel|cancelar)/gi}
+);
