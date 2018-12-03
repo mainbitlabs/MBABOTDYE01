@@ -63,7 +63,7 @@ bot.dialog('/', [
     function (session) {
         // Primer diálogo    
         session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
-        session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
+        session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n\n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
         builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
         time = setTimeout(() => {
             session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
@@ -80,11 +80,25 @@ bot.dialog('/', [
         tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
             if(!error ) {
                 session.dialogData.proyecto= result.Proyecto._;
-                session.send(`Esta es la información relacionada:`);
-                session.send(`**Proyecto:** ${result.Proyecto._} \n **Número de Serie**: ${result.RowKey._} \n **Asociado:** ${result.PartitionKey._}  \n  **Descripción:** ${result.Descripcion._} \n  **Localidad:** ${result.Localidad._} \n  **Inmueble:** ${result.Inmueble._} \n  **Servicio:** ${result.Servicio._} \n  **Estatus:** ${result.Status._} \n  **Resguardo:** ${result.Resguardo._} \n  **Check:** ${result.Check._} \n  **Borrado:** ${result.Borrado._} \n  **Baja:** ${result.Baja._}`);
+                session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Estatus:** ${result.Status._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
+
+                // session.send(`Esta es la información relacionada:`);
+                // session.send(`**Proyecto:** ${result.Proyecto._} `);
+                // session.send(`**Número de Serie**: ${result.RowKey._}`);
+                // session.send(`**Asociado:** ${result.PartitionKey._}`);
+                // session.send(`**Descripción:** ${result.Descripcion._}`);
+                // session.send(`**Localidad:** ${result.Localidad._}`);
+                // session.send(`**Inmueble:** ${result.Inmueble._}`);
+                // session.send(`**Servicio:** ${result.Servicio._}`);
+                // session.send(`**Estatus:** ${result.Status._}`);
+                // session.send(`**Resguardo:** ${result.Resguardo._}`);
+                // session.send(`**Check:** ${result.Check._}`);
+                // session.send(`**Borrado:** ${result.Borrado._} `);
+                // session.send(`**Baja:** ${result.Baja._}`);
                 builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
             }
             else{
+                clearTimeout(time);
                 session.endConversation("**Error** La serie no coincide con el Asociado.");
             }
         });
@@ -99,6 +113,7 @@ bot.dialog('/', [
             break;
 
             case Choice.No:
+            clearTimeout(time);
             session.endConversation("Por favor valida con tu soporte que el Número de Serie esté asignado a tu Asociado");
             break;
         }
@@ -114,6 +129,7 @@ bot.dialog('/', [
             break;
 
             case Choice.No:
+            clearTimeout(time);
             session.endConversation("De acuerdo, hemos terminado por ahora");
             break;
         }
@@ -188,7 +204,7 @@ bot.dialog('/', [
             var ctype = stype[1];
             var url = attachment.contentUrl;
             // session.send(ctype);
-            // session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
+            // session.send(`contentType: ${attachment.contentType} \n\n Nombre: ${attachment.name} `);
             // Se pasa la imagen a base64
             image2base64(url)
                 .then(
@@ -204,7 +220,7 @@ bot.dialog('/', [
                                     console.log(`entity property ${session.dialogData.tipo} updated`);
                                     // console.log(respons);
                                     // console.log(res);
-                                    
+                                Discriptor = {};
                                 }
                                 else{err}
                             });
@@ -241,6 +257,7 @@ bot.dialog('/', [
             break;
 
             case Choice.No:
+            clearTimeout(time);
             session.endConversation("De acuerdo, hemos terminado por ahora");
             break;
         }
@@ -297,7 +314,6 @@ bot.dialog('/', [
         
     },
     function (session) {
-        console.log('Sexto dialogo \n'+ Discriptor);
         // Sexto diálogo
         var msg = session.message;
         if (msg.attachments && msg.attachments.length > 0) {
@@ -316,7 +332,7 @@ bot.dialog('/', [
             var ctype = stype[1];
             var url = attachment.contentUrl;
             // session.send(ctype);
-            // session.send(`contentType: ${attachment.contentType} \n Nombre: ${attachment.name} `);
+            // session.send(`contentType: ${attachment.contentType} \n\n Nombre: ${attachment.name} `);
             // Se pasa la imagen a base64
             image2base64(url)
                 .then(
@@ -332,11 +348,13 @@ bot.dialog('/', [
                                     console.log(`entity property ${session.dialogData.tipo} updated`);
                                     // console.log(respons);
                                     // console.log(res);
-                                    
+                                    Discriptor = {};
+
                                 }
                                 else{err}
                             });
                             session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                            clearTimeout(time);
                             session.endConversation('Hemos terminado por ahora');
                         }
                         else{
