@@ -59,7 +59,6 @@ var Opts = {
 var Discriptor = {};
 // El díalogo principal inicia aquí
 bot.dialog('/', [
-    
     function (session) {
         // Primer diálogo    
         session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
@@ -78,30 +77,42 @@ bot.dialog('/', [
         session.dialogData.asociado = results.response;
         // Tercer diálogo
         tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
-            if(!error ) {
-                session.dialogData.proyecto= result.Proyecto._;
-                session.send(`  **Proyecto:** ${result.Proyecto._} \n\n  **Número de Serie**: ${result.RowKey._} \n\n  **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Estatus:** ${result.Status._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
-
-                // session.send(`Esta es la información relacionada:`);
-                // session.send(`**Proyecto:** ${result.Proyecto._} `);
-                // session.send(`**Número de Serie**: ${result.RowKey._}`);
-                // session.send(`**Asociado:** ${result.PartitionKey._}`);
-                // session.send(`**Descripción:** ${result.Descripcion._}`);
-                // session.send(`**Localidad:** ${result.Localidad._}`);
-                // session.send(`**Inmueble:** ${result.Inmueble._}`);
-                // session.send(`**Servicio:** ${result.Servicio._}`);
-                // session.send(`**Estatus:** ${result.Status._}`);
-                // session.send(`**Resguardo:** ${result.Resguardo._}`);
-                // session.send(`**Check:** ${result.Check._}`);
-                // session.send(`**Borrado:** ${result.Borrado._} `);
-                // session.send(`**Baja:** ${result.Baja._}`);
-                builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
-            }
+            if (!error && result.Resguardo._ === 'Resguardo Adjunto' && result.Baja._ === 'Baja Adjunto' && result.Check._ === 'Check Adjunto' && result.Borrado._ === 'Borrado Adjunto') {
+                var Estatus = {
+                    PartitionKey : {'_': session.dialogData.asociado, '$':'Edm.String'},
+                    RowKey : {'_': session.dialogData.serie, '$':'Edm.String'},
+                    Status : {'_': 'Completado', '$':'Edm.String'}
+                };
+                console.log(Estatus);
+                tableService.mergeEntity(config.table1, Estatus, function(err, res, respons) {
+                    if (!err) {
+                        console.log(`Status Completado`);
+                        Estatus = {};
+                    }
+                    else{err}
+                });
+            } 
             else{
                 clearTimeout(time);
                 session.endConversation("**Error** La serie no coincide con el Asociado.");
             }
         });
+        session.sendTyping();
+            // Envíamos un mensaje al usuario para que espere.
+            session.send('Estamos atendiendo tu solicitud. Por favor espera un momento...');
+            setTimeout(() => {
+        tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
+            if (!error) {                    
+                session.dialogData.proyecto= result.Proyecto._;
+                session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Estatus:** ${result.Status._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
+                builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });          
+            }
+            else{
+                clearTimeout(time);
+                session.endConversation("**Error** La serie no coincide con el Asociado.");
+            }
+            });
+        }, 5000);
     },
     function (session, results) {
         // Cuarto diálogo
@@ -203,9 +214,6 @@ bot.dialog('/', [
             var stype = attachment.contentType.split('/');
             var ctype = stype[1];
             var url = attachment.contentUrl;
-            // session.send(ctype);
-            // session.send(`contentType: ${attachment.contentType} \n\n Nombre: ${attachment.name} `);
-            // Se pasa la imagen a base64
             image2base64(url)
                 .then(
                     (response) => {
@@ -214,12 +222,9 @@ bot.dialog('/', [
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(Discriptor);
-                            
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                 if (!err) {
                                     console.log(`entity property ${session.dialogData.tipo} updated`);
-                                    // console.log(respons);
-                                    // console.log(res);
                                 Discriptor = {};
                                 }
                                 else{err}
@@ -240,12 +245,10 @@ bot.dialog('/', [
                         console.log(error); //Exepection error....
                     }
                 );
-            
         } else {
                 // Echo back users text
                 session.send("Enviaste esto en ves de una imagen: %s", session.message.text);
         }
-
     },
     function (session, results) {
         // Cuarto diálogo
@@ -331,9 +334,6 @@ bot.dialog('/', [
             var stype = attachment.contentType.split('/');
             var ctype = stype[1];
             var url = attachment.contentUrl;
-            // session.send(ctype);
-            // session.send(`contentType: ${attachment.contentType} \n\n Nombre: ${attachment.name} `);
-            // Se pasa la imagen a base64
             image2base64(url)
                 .then(
                     (response) => {
@@ -342,14 +342,10 @@ bot.dialog('/', [
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(Discriptor);
-                            
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                 if (!err) {
                                     console.log(`entity property ${session.dialogData.tipo} updated`);
-                                    // console.log(respons);
-                                    // console.log(res);
                                     Discriptor = {};
-
                                 }
                                 else{err}
                             });
@@ -359,7 +355,6 @@ bot.dialog('/', [
                         }
                         else{
                             console.log('Hubo un error: '+ error);
-                            
                         }
                     });
                     }
@@ -369,7 +364,6 @@ bot.dialog('/', [
                         console.log(error); //Exepection error....
                     }
                 );
-            
         } else {
                 // Echo back users text
                 session.send("Enviaste esto en ves de una imagen: %s", session.message.text);
