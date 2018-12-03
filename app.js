@@ -16,7 +16,7 @@ var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
 //    console.log('%s listening to %s', server.name, server.url); 
 });
-  
+
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: process.env.MicrosoftAppId,
@@ -55,7 +55,8 @@ var Opts = {
  };
  
  var time;
- var descriptor = {};
+// Variable Discriptor para actualizar tabla
+var Discriptor = {};
 // El díalogo principal inicia aquí
 bot.dialog('/', [
     
@@ -122,51 +123,53 @@ bot.dialog('/', [
         // Quinto diálogo
         var selection2 = results.response.entity;
         session.dialogData.tipo = selection2;
-        session.dialogData.descriptor ={};
+        session.dialogData.Discriptor ={};
         switch (selection2) {
 
             case Opts.Resguardo:
+            function appendResguardo() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+            };
+            appendResguardo();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
-        
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Resguardo= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-            
-               
             break;
 
             case Opts.Borrado:
+            function appendBorrado() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
+            };
+            appendBorrado();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
-
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Borrado= {'_': 'Borrado Adjunto', '$':'Edm.String'};
-
             break;
 
             case Opts.Baja:
+            function appendBaja() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
+            };
+            appendBaja();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
-
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Baja= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-               
-                break;
+            break;
 
             case Opts.Check:
-            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
-           
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Check= {'_': 'Check Adjunto', '$':'Edm.String'};
-           
+            function appendCheck() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
                 
+            };
+            appendCheck();
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
             break;
         }
         
     },
     function (session) {
-        console.log('Sexto dialogo \n'+ descriptor);
         // Sexto diálogo
         var msg = session.message;
         if (msg.attachments && msg.attachments.length > 0) {
@@ -194,13 +197,17 @@ bot.dialog('/', [
                         var buffer = new Buffer(response, 'base64');
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
+                            console.log(Discriptor);
                             
-                            // tableService.mergeEntity(config.table1, descriptor, function (error,result,response) {
-                            //     if (!error) {
-                            //         console.log('entity property Resguardo updated');
+                            tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                                if (!err) {
+                                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                                    // console.log(respons);
+                                    // console.log(res);
                                     
-                            //     }
-                            // });
+                                }
+                                else{err}
+                            });
                            
                             session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
                             builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
@@ -243,51 +250,54 @@ bot.dialog('/', [
         // Quinto diálogo
         var selection2 = results.response.entity;
         session.dialogData.tipo = selection2;
-        session.dialogData.descriptor ={};
+        session.dialogData.Discriptor ={};
         switch (selection2) {
 
             case Opts.Resguardo:
+            function appendResguardo() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
+            };
+            appendResguardo();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
-        
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Resguardo= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-            
-               
             break;
 
             case Opts.Borrado:
+            function appendBorrado() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
+            };
+            appendBorrado();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
-
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Borrado= {'_': 'Borrado Adjunto', '$':'Edm.String'};
-
             break;
 
             case Opts.Baja:
+            function appendBaja() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
+            };
+            appendBaja();
             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
-
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Baja= {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-               
-                break;
+            break;
 
             case Opts.Check:
-            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
-           
-                descriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                descriptor.RowKey= {'_': session.dialogData.serie, '$':'Edm.String'};
-                descriptor.Check= {'_': 'Check Adjunto', '$':'Edm.String'};
-           
+            function appendCheck() {
+                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
                 
+            };
+            appendCheck();
+            builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
             break;
         }
         
     },
     function (session) {
-        console.log('Sexto dialogo \n'+ descriptor);
+        console.log('Sexto dialogo \n'+ Discriptor);
         // Sexto diálogo
         var msg = session.message;
         if (msg.attachments && msg.attachments.length > 0) {
@@ -315,14 +325,17 @@ bot.dialog('/', [
                         var buffer = new Buffer(response, 'base64');
                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
+                            console.log(Discriptor);
                             
-                            // tableService.mergeEntity(config.table1, descriptor, function (error,result,response) {
-                            //     if (!error) {
-                            //         console.log('entity property Resguardo updated');
+                            tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                                if (!err) {
+                                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                                    // console.log(respons);
+                                    // console.log(res);
                                     
-                            //     }
-                            // });
-                           
+                                }
+                                else{err}
+                            });
                             session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
                             session.endConversation('Hemos terminado por ahora');
                         }
