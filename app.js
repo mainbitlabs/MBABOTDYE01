@@ -77,15 +77,15 @@ bot.dialog('/', [
         session.dialogData.asociado = results.response;
         // Tercer diálogo
         tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
-            if (!error && result.Resguardo._ === 'Resguardo Adjunto' && result.Baja._ === 'Baja Adjunto' && result.Check._ === 'Check Adjunto' && result.Borrado._ === 'Borrado Adjunto') {
+            if(!error && result.Resguardo._ === 'Resguardo Adjunto' && result.Baja._ === 'Baja Adjunto' && result.Check._ === 'Check Adjunto' && result.Borrado._ === 'Borrado Adjunto') {
                 var Estatus = {
                     PartitionKey : {'_': session.dialogData.asociado, '$':'Edm.String'},
                     RowKey : {'_': session.dialogData.serie, '$':'Edm.String'},
                     Status : {'_': 'Completado', '$':'Edm.String'}
                 };
                 console.log(Estatus);
-                tableService.mergeEntity(config.table1, Estatus, function(err, res, respons) {
-                    if (!err) {
+                tableService.mergeEntity(config.table1, Estatus, function(err, res, respons){
+                    if (!err){
                         console.log(`Status Completado`);
                         Estatus = {};
                     }
@@ -94,22 +94,22 @@ bot.dialog('/', [
             } 
             else{
                 clearTimeout(time);
-                session.endConversation("**Error** La serie no coincide con el Asociado.");
+                // session.endConversation("**Error** 1");
             }
         });
         session.sendTyping();
             // Envíamos un mensaje al usuario para que espere.
             session.send('Estamos atendiendo tu solicitud. Por favor espera un momento...');
             setTimeout(() => {
-        tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
-            if (!error) {                    
+        tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+            if (!eror) {                    
                 session.dialogData.proyecto= result.Proyecto._;
                 session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Estatus:** ${result.Status._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
                 builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });          
             }
             else{
                 clearTimeout(time);
-                session.endConversation("**Error** La serie no coincide con el Asociado.");
+                session.endConversation("**Error** La serie no coincide con el Asociado. 2");
             }
             });
         }, 5000);
@@ -219,7 +219,7 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(Discriptor);
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
@@ -230,7 +230,7 @@ bot.dialog('/', [
                                 else{err}
                             });
                            
-                            session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                            session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
                             builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
                         }
                         else{
@@ -339,22 +339,23 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(Discriptor);
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                 if (!err) {
                                     console.log(`entity property ${session.dialogData.tipo} updated`);
-                                    Discriptor = {};
+                                Discriptor = {};
                                 }
                                 else{err}
                             });
-                            session.send(`El archivo **${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
-                            clearTimeout(time);
-                            session.endConversation('Hemos terminado por ahora');
+                            
+                            session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                            builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
                         }
                         else{
                             console.log('Hubo un error: '+ error);
+                            
                         }
                     });
                     }
