@@ -351,7 +351,7 @@ bot.dialog('/', [
                             });
                             
                             session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
-                            builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
+                            session.endConversation('Hemos terminado por ahora.');
                         }
                         else{
                             console.log('Hubo un error: '+ error);
