@@ -104,7 +104,7 @@ bot.dialog('/', [
         tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
             if (!eror) {                    
                 session.dialogData.proyecto= result.Proyecto._;
-                session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Estatus:** ${result.Status._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
+                session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n \n\n **Estatus:** ${result.Status._} \n\n \n\n **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
                 builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });          
             }
             else{
@@ -219,7 +219,7 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'_'+session.dialogData.asociado+'.'+ctype, buffer,  function(error, result, response) {
                         if (!error) {
                             console.log(Discriptor);
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
