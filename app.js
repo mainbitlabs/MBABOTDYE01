@@ -339,8 +339,8 @@ bot.dialog('/', [
                     (response) => {
                         // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                         var buffer = new Buffer(response, 'base64');
-                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'.'+ctype, buffer,  function(error, result, response) {
-                        if (!error) {
+                    blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'_'+session.dialogData.asociado+'.'+ctype, buffer,  function(error, result, response) {
+                            if (!error) {
                             console.log(Discriptor);
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                 if (!err) {
