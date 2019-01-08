@@ -43,9 +43,18 @@ var bot = new builder.UniversalBot(connector);
 bot.set('storage', tableStorage);
 
 
+
 var Choice = {
     Si: 'Sí',
     No: 'No'
+ };
+
+ var Motivos = {
+    Uno: 'El usuario rechaza el servicio y/o no disponible',
+    Dos: 'El usuario no se localiza en el sitio',
+    Tres: 'El usuario no quiere firmar',
+    Cuatro: 'Problema de infraestructura',
+    Cinco: 'Equipo no se encuentra en sitio',
  };
 
  var Opts = {
@@ -112,7 +121,7 @@ var Choice = {
              }
              else{
                  clearTimeout(time);
-                 session.endConversation("**Error** La serie no coincide con el Asociado. 2");
+                 session.endConversation("**Error** La serie no coincide con el Asociado.");
              }
              });
          }, 5000);
@@ -199,14 +208,14 @@ var Choice = {
  
              case Opts.Pospuesto:
              // Comentar detalles de Servicio Pospuesto
-             builder.Prompts.text(session, `**Comenta con detalle el motivo por el cual se pospuso el servicio.**`);
+             builder.Prompts.choice(session, `**Elije el motivo por el cual se pospone el servicio.**`,[Motivos.Uno, Motivos.Dos, Motivos.Tres, Motivos.Cuatro, Motivos.Cinco], { listStyle: builder.ListStyle.button });
              break;
          }
          
      },
      function (session, results) {
          // Sexto diálogo
-         session.dialogData.comentarios = results.response;
+         session.dialogData.comentarios = results.response.entity;
          var msg = session.message;
          if (msg.attachments && msg.attachments.length > 0) {
              // Echo back attachment
@@ -255,16 +264,24 @@ var Choice = {
                      }
                  );
          } else {
+                tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                    if (!eror) {                    
+                        nodeoutlook.sendEmail({
+                            auth: {
+                                user: `${config.email}`,
+                                pass: `${config.pass}`,
+                            }, from: `${config.email}`,
+                            to: `esanchezl@mainbit.com.mx, crodiguezb@mainbit.com.mx, `,
+                            subject: 'Incidente de Servicio',
+                            html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Asociado: ${session.dialogData.asociado}</b>  <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </h3> </p><br><p>Saludos.</p>`
+                           });
+                    }
+                    else{
+                        clearTimeout(time);
+                        session.endConversation("**Error** La serie no coincide con el Asociado.");
+                    }
+                });
                  // Echo back users text
-                 nodeoutlook.sendEmail({
-                     auth: {
-                         user: `${config.email}`,
-                         pass: `${config.pass}`,
-                     }, from: `${config.email}`,
-                     to: `${config.email}, mjimenez@mainbit.com.mx, crodriguezb@mainbit.com.mx`,
-                     subject: 'Servicio Pospuesto',
-                     html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Asociado: ${session.dialogData.asociado}</b>  <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> </h3> </p><br><p>Saludos.</p>`
-                    });
                      function appendPospuesto() {
                          Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
                          Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
