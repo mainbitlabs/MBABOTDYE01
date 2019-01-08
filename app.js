@@ -263,7 +263,7 @@ var Choice = {
                      }, from: `${config.email}`,
                      to: `${config.email}`,
                      subject: 'Servicio Pospuesto',
-                     html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <b>${session.dialogData.comentarios}</b> <br> <b>${session.dialogData.asociado}</b>  <br> <b>${session.dialogData.proyecto}</b>  <br> <b>${session.dialogData.serie}</b> </h3> </p><br><p>Saludos.</p>`
+                     html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Asociado: ${session.dialogData.asociado}</b>  <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> </h3> </p><br><p>Saludos.</p>`
                     });
                      function appendPospuesto() {
                          Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
