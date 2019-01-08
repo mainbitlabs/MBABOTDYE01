@@ -5,6 +5,7 @@ A simple echo bot for the Microsoft Bot Framework.
 var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
+var nodeoutlook = require('nodejs-nodemailer-outlook');
 var image2base64 = require('image-to-base64');
 var azurest = require('azure-storage');
 var config = require('./config');
