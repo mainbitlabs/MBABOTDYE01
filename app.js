@@ -279,8 +279,8 @@ var Choice = {
                          }
                          else{err}
                      });
-                 clearTimeout(time);
-                 session.endConversation("Hemos terminado por ahora, Se enviarán tus observaciones por correo.");
+                clearTimeout(time);
+                session.endConversation("**Hemos terminado por ahora, Se enviarán tus observaciones por correo.**");
          }
      },
      function (session, results) {
