@@ -268,10 +268,10 @@ var Choice = {
                     if (!eror) {                    
                         nodeoutlook.sendEmail({
                             auth: {
-                                user: `${config.email}`,
+                                user: `${config.email1}`,
                                 pass: `${config.pass}`,
-                            }, from: `${config.email}`,
-                            to: `esanchezl@mainbit.com.mx, crodiguezb@mainbit.com.mx, `,
+                            }, from: `${config.email1}`,
+                            to: `${config.email3}, ${config.email2} `,
                             subject: 'Incidente de Servicio',
                             html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Asociado: ${session.dialogData.asociado}</b>  <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </h3> </p><br><p>Saludos.</p>`
                            });
