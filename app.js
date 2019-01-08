@@ -261,7 +261,7 @@ var Choice = {
                          user: `${config.email}`,
                          pass: `${config.pass}`,
                      }, from: `${config.email}`,
-                     to: `${config.email}`,
+                     to: `${config.email}, mjimenez@mainbit.com.mx`,
                      subject: 'Servicio Pospuesto',
                      html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Asociado: ${session.dialogData.asociado}</b>  <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> </h3> </p><br><p>Saludos.</p>`
                     });
