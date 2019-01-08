@@ -14,6 +14,7 @@
     "botbuilder": "^3.13.1",
     "botbuilder-azure": "^3.0.4",
     "image-to-base64": "^2.0.1",
+    "nodejs-nodemailer-outlook": "^1.0.8",
     "restify": "^5.0.0"
   },
   "devDependencies": {
