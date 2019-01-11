@@ -43,10 +43,13 @@ var bot = new builder.UniversalBot(connector);
 bot.set('storage', tableStorage);
 
 
-
 var Choice = {
     Si: 'Sí',
     No: 'No'
+ };
+var Docs = {
+    Evidencia: 'Adjuntar Evidencia o Documentación',
+    Incidente: 'Reportar Incidente de Servicio'
  };
 
  var Motivos = {
@@ -60,11 +63,10 @@ var Choice = {
  var Opts = {
     Resguardo : 'Resguardo',
     Check: 'Check',
-    Borrado: 'Borrado',
     Baja: 'Baja',
-    Pospuesto: 'Incidente de Servicio'
+    Borrado: 'Borrado',
+    Hoja: 'Hoja de Servicio'
  };
- 
  
  var time;
  // Variable Discriptor para actualizar tabla
@@ -89,7 +91,7 @@ var Choice = {
          session.dialogData.asociado = results.response;
          // Tercer diálogo
          tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
-             if(!error && result.Resguardo._ === 'Resguardo Adjunto' && result.Baja._ === 'Baja Adjunto' && result.Check._ === 'Check Adjunto' && result.Borrado._ === 'Borrado Adjunto') {
+             if(!error && result.Resguardo._ === 'Resguardo Adjunto' && result.Baja._ === 'Baja Adjunto' && result.Check._ === 'Check Adjunto' && result.Borrado._ === 'Borrado Adjunto'  && result.HojaDeServicio._ === 'Hoja de Servicio Adjunto') {
                  var Estatus = {
                      PartitionKey : {'_': session.dialogData.asociado, '$':'Edm.String'},
                      RowKey : {'_': session.dialogData.serie, '$':'Edm.String'},
@@ -116,7 +118,7 @@ var Choice = {
          tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
              if (!eror) {                    
                  session.dialogData.proyecto= result.Proyecto._;
-                 session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n \n\n **Estatus:** ${result.Status._} \n\n \n\n **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._}`);
+                 session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n \n\n **Estatus:** ${result.Status._} \n\n \n\n **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._} \n\n  **Hoja de Servicio:** ${result.HojaDeServicio._}`);
                  builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });          
              }
              else{
@@ -132,7 +134,7 @@ var Choice = {
          switch (selection) {
              
              case Choice.Si:
-             builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
+             builder.Prompts.choice(session, '¿Qué deseas realizar?', [Docs.Evidencia, Docs.Incidente], { listStyle: builder.ListStyle.button });
              break;
  
              case Choice.No:
@@ -147,13 +149,15 @@ var Choice = {
          var selection3 = results.response.entity;
          switch (selection3) {
              
-             case Choice.Si:
-             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check, Opts.Borrado, Opts.Baja, Opts.Pospuesto], { listStyle: builder.ListStyle.button });  
+             case Docs.Evidencia:
+            //  session.send('aqui deben ir las opciones');
+             builder.Prompts.choice(session, 'Que tipo de Evidencia o Documentación deseas adjuntar: ',[Opts.Baja, Opts.Borrado, Opts.Check, Opts.Hoja, Opts.Resguardo],{listStyle: builder.ListStyle.button});
+            //  builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check,  Opts.Baja, Opts.Borrado, Opts.Hoja, Opts.Pospuesto], { listStyle: builder.ListStyle.button });  
              break;
  
-             case Choice.No:
+             case Docs.Incidente:
              clearTimeout(time);
-             session.endConversation("De acuerdo, hemos terminado por ahora");
+             session.beginDialog("incidente");
              break;
          }
          
@@ -205,17 +209,54 @@ var Choice = {
              appendCheck();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
              break;
- 
-             case Opts.Pospuesto:
+             
+             case Opts.Hoja:
+             function appendHoja() {
+                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                 Discriptor.HojaDeServicio = {'_': 'Hoja de Servicio Adjunto', '$':'Edm.String'};
+                 
+             };
+             appendHoja();
+             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Hoja}**`);
+             break;
+             
+             case Motivos.Uno:
+            session.dialogData.X = Motivos.Uno;
              // Comentar detalles de Servicio Pospuesto
-             builder.Prompts.choice(session, `**Elije el motivo por el cual se pospone el servicio.**`,[Motivos.Uno, Motivos.Dos, Motivos.Tres, Motivos.Cuatro, Motivos.Cinco], { listStyle: builder.ListStyle.button });
+            builder.Prompts.text(session, 'Escribe tus observaciones');
+             break;
+
+             case Motivos.Dos:
+             session.dialogData.X = Motivos.Dos;
+             // Comentar detalles de Servicio Pospuesto
+             builder.Prompts.text(session, 'Escribe tus observaciones');
+             break;
+             
+             case Motivos.Tres:
+             session.dialogData.X = Motivos.Tres;
+             // Comentar detalles de Servicio Pospuesto
+             builder.Prompts.text(session, 'Escribe tus observaciones');
+             break;
+            
+             case Motivos.Cuatro:
+             session.dialogData.X = Motivos.Cuatro;
+             // Comentar detalles de Servicio Pospuesto
+             builder.Prompts.text(session, 'Escribe tus observaciones');
+             break;
+             
+             case Motivos.Cinco:
+             session.dialogData.X = Motivos.Cinco;
+             // Comentar detalles de Servicio Pospuesto
+             builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
          }
          
      },
+     
      function (session, results) {
          // Sexto diálogo
-         session.dialogData.comentarios = results.response.entity;
+         session.dialogData.comentarios = results.response;
          var msg = session.message;
          if (msg.attachments && msg.attachments.length > 0) {
              // Echo back attachment
@@ -271,9 +312,9 @@ var Choice = {
                                 user: `${config.email1}`,
                                 pass: `${config.pass}`,
                             }, from: `${config.email1}`,
-                            to: `${config.email3}, ${config.email2} `,
+                            to: `${config.email2}, ${config.email3} `,
                             subject: `Incidente de Servicio: ${session.dialogData.serie} / ${result.Servicio._}`,
-                            html: `<p>El servicio se pospuso por el siguiente motivo: <br><h3> <blockquote>${session.dialogData.comentarios}</blockquote> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </h3> </p><br><p>Saludos.</p>`
+                            html: `<p>El servicio se pospuso por el siguiente motivo: <br><p> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </p> </p><br><p>Saludos.</p>`
                            });
                     }
                     else{
@@ -285,7 +326,7 @@ var Choice = {
                      function appendPospuesto() {
                          Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
                          Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                         Discriptor.Pospuesto = {'_': session.dialogData.comentarios, '$':'Edm.String'};
+                         Discriptor.Pospuesto = {'_': session.dialogData.X+' '+session.dialogData.comentarios, '$':'Edm.String'};
                          
                      };
                      appendPospuesto();
@@ -306,7 +347,7 @@ var Choice = {
          switch (selection3) {
              
              case Choice.Si:
-             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check, Opts.Borrado, Opts.Baja], { listStyle: builder.ListStyle.button });  
+             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Baja, Opts.Borrado, Opts.Check, Opts.Hoja, Opts.Resguardo], { listStyle: builder.ListStyle.button });  
              break;
  
              case Choice.No:
@@ -431,4 +472,9 @@ var Choice = {
      }
  ).triggerAction(
      {matches: /(cancel|cancelar)/gi}
+ );
+ bot.dialog('incidente',
+    function (session, next) {
+        builder.Prompts.choice(session, `**Elije el motivo por el cual se pospone el servicio.**`,[Motivos.Uno, Motivos.Dos, Motivos.Tres, Motivos.Cuatro, Motivos.Cinco], { listStyle: builder.ListStyle.button });
+    }
  );
