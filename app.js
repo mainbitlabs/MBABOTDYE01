@@ -53,11 +53,11 @@ var Docs = {
  };
 
  var Motivos = {
-    Uno: 'El usuario rechaza el servicio y/o no disponible',
-    Dos: 'El usuario no se localiza en el sitio',
-    Tres: 'El usuario no quiere firmar',
-    Cuatro: 'Problema de infraestructura',
-    Cinco: 'Equipo no se encuentra en sitio',
+    Uno: 'Usuario',
+    Dos: 'Documentos',
+    Tres: 'Infraestructura',
+    Cuatro: 'Equipo',
+    Cinco: 'Servicio',
  };
 
  var Opts = {
@@ -312,7 +312,7 @@ var Docs = {
                                 user: `${config.email1}`,
                                 pass: `${config.pass}`,
                             }, from: `${config.email1}`,
-                            to: `${config.email2}, ${config.email3} `,
+                            to: `${config.email2}, ${config.email3}, ${config.email1}  `,
                             subject: `Incidente de Servicio: ${session.dialogData.serie} / ${result.Servicio._}`,
                             html: `<p>El servicio se pospuso por el siguiente motivo: <br><p> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </p> </p><br><p>Saludos.</p>`
                            });
