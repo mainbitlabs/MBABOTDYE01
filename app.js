@@ -85,7 +85,7 @@ var Docs = {
      function (session, results) {
          // Segundo diálogo
          session.dialogData.serie = results.response;
-         builder.Prompts.text(session, '¿Cuál es tu **Clave de Asociado**?')
+         builder.Prompts.text(session, '¿Cuál es tu **Clave de Asociado**?');
      },
      function (session, results) {
          session.dialogData.asociado = results.response;
@@ -107,8 +107,8 @@ var Docs = {
                  });
              } 
              else{
-                 clearTimeout(time);
-                 // session.endConversation("**Error** 1");
+                //  clearTimeout(time);
+                //  session.endConversation("**Error** Los ");
              }
          });
          session.sendTyping();
