@@ -65,7 +65,7 @@ var Docs = {
     Check: 'Check',
     Baja: 'Baja',
     Borrado: 'Borrado',
-    Hoja: 'Hoja de Servicio'
+    Hoja: 'HojaDeServicio'
  };
  
  var time;
