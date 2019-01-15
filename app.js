@@ -156,7 +156,6 @@ var Docs = {
              break;
  
              case Docs.Incidente:
-             clearTimeout(time);
              session.beginDialog("incidente");
              break;
          }
