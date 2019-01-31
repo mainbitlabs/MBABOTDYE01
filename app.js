@@ -322,23 +322,32 @@ var Docs = {
                         session.endConversation("**Error** La serie no coincide con el Asociado.");
                     }
                 });
-                 // Echo back users text
-                     function appendPospuesto() {
-                         Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                         Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                         Discriptor.Pospuesto = {'_': session.dialogData.X+' '+session.dialogData.comentarios, '$':'Edm.String'};
-                         
-                     };
-                     appendPospuesto();
-                     tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
-                         if (!err) {
-                             console.log(`entity property ${session.dialogData.tipo} updated`);
-                         Discriptor = {};
-                         }
-                         else{err}
-                     });
-                clearTimeout(time);
-                session.endConversation("**Hemos terminado por ahora, Se enviarán tus observaciones por correo.**");
+                tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                    if (!eror) {  
+                        // Comentarios
+                        var dateNow = new Date().toLocaleString();
+                            function appendPospuesto() {
+                                Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                                Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                                Discriptor.Pospuesto = {'_':dateNow +' '+session.dialogData.X +' '+ session.dialogData.comentarios+'\n'+result.Pospuesto._, '$':'Edm.String'};
+                                
+                            };
+                            appendPospuesto();
+                            tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                                if (!err) {
+                                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                                Discriptor = {};
+                                }
+                                else{err}
+                            });
+                       clearTimeout(time);
+                       session.endConversation("**Hemos terminado por ahora, Se enviarán tus observaciones por correo.**");
+                       
+                    }
+                    else{
+                        
+                    }
+                });
          }
      },
      function (session, results) {
