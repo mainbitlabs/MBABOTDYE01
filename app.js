@@ -80,7 +80,7 @@ var Docs = {
          builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
          time = setTimeout(() => {
              session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
-         }, 300000);
+         }, 600000);
      },
      function (session, results) {
          // Segundo diálogo
