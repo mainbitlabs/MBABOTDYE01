@@ -76,7 +76,7 @@ var Docs = {
      function (session) {
          // Primer diálogo    
          session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
-         session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n\n **Importante:** este bot tiene un ciclo de vida de 5 minutos, te recomendamos concluir la actividad antes de este periodo.`);
+         session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n\n **Importante:** este bot tiene un ciclo de vida de 10 minutos, te recomendamos concluir la actividad antes de este periodo.`);
          builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
          time = setTimeout(() => {
              session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
