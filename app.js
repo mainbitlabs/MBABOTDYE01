@@ -314,7 +314,7 @@ var Docs = {
                             }, from: `${config.email1}`,
                             to: `${config.email2}, ${config.email3}, ${config.email1}  `,
                             subject: `${session.dialogData.proyecto} Incidente de Servicio: ${session.dialogData.serie} / ${result.Servicio._}`,
-                            html: `<p>El servicio se pospuso por el siguiente motivo: <br><p> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </p> </p><br><p>Saludos.</p>`
+                            html: `<p>El servicio se pospuso por el siguiente motivo: <br><p> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> </p> </p><br>`
                            });
                     }
                     else{
