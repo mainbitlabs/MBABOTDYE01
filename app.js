@@ -48,8 +48,8 @@ var Choice = {
     No: 'No'
  };
 var Docs = {
-    Evidencia: 'Adjuntar Evidencia o Documentación',
-    Incidente: 'Reportar Incidente de Servicio'
+    Evidencia: 'Adjuntar Documentación',
+    Incidente: 'Reportar Incidente'
  };
 
  var Motivos = {
