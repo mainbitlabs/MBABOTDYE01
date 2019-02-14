@@ -313,7 +313,7 @@ var Docs = {
                                 pass: `${config.pass}`,
                             }, from: `${config.email1}`,
                             to: `${config.email1}  `,
-                            subject: `${session.dialogData.proyecto} Incidente de Servicio: ${session.dialogData.serie} / ${result.Servicio._}`,
+                            subject: `${session.dialogData.proyecto} Incidente de ${session.dialogData.X}: ${session.dialogData.serie} / ${result.Servicio._}`,
                             html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.dialogData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b>`
                            });
                     }
