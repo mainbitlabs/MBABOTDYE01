@@ -185,7 +185,10 @@ var Docs = {
                  Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
              };
              appendBorrado();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
+             session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
+
+            //  builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
+
              break;
  
              case Opts.Baja:
@@ -252,7 +255,37 @@ var Docs = {
          }
          
      },
-     
+     function (session, results, next) {
+        // si el tipo es = borrado usa este diálogo
+        if (session.dialogData.tipo == 'Borrado') {
+            session.dialogData.sborrado = results.response;
+            var Serie = {}; //Objeto para actualizar serie borrada
+            function borrado() {
+                Serie.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Serie.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Serie.SerieBorrada = {'_': session.dialogData.sborrado, '$':'Edm.String'};
+                
+            };
+            borrado();
+            tableService.mergeEntity(config.table1, Serie, function(err, res, respons) {
+                if (!err) {
+                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                    function appendBorrado() {
+                        Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                        Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                        Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
+                    };
+                    appendBorrado();
+                    builder.Prompts.attachment(session, `**Adjunta aquí documento de ${Opts.Borrado}**`);
+                }
+                else{err} 
+            });
+            // session.send('elegiste Borrado');
+        }
+        else{ //si el tipo != borrado salta este diálogo
+            next();
+        }
+    },
      function (session, results) {
          // Sexto diálogo
          session.dialogData.comentarios = results.response;
@@ -283,6 +316,7 @@ var Docs = {
                              tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                  if (!err) {
                                      console.log(`entity property ${session.dialogData.tipo} updated`);
+                                //  vacia el contenido del Discriptor para volver a ser usado
                                  Discriptor = {};
                                  }
                                  else{err}
@@ -487,3 +521,11 @@ var Docs = {
         builder.Prompts.choice(session, `**Elije el motivo por el cual se pospone el servicio.**`,[Motivos.Uno, Motivos.Dos, Motivos.Tres, Motivos.Cuatro, Motivos.Cinco], { listStyle: builder.ListStyle.button });
     }
  );
+ bot.dialog('borrado', //dialogo externo "borrado"
+ function (session) {
+     builder.Prompts.text(session, 'Ingresa el número de serie de borrado');
+ },
+ function (session, results) {
+     session.dialogData.sborrado = results.response;
+     session.endDialogWithResult({ response: session.dialogData.sborrado });}
+);
