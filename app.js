@@ -283,12 +283,14 @@ var Docs = {
             // session.send('elegiste Borrado');
         }
         else{ //si el tipo != borrado salta este diálogo
+            session.dialogData.comentarios = results.response;
+            console.log('Comentarios ', session.dialogData.comentarios);
+            console.log('Next function');
             next();
         }
     },
      function (session, results) {
          // Sexto diálogo
-         session.dialogData.comentarios = results.response;
          var msg = session.message;
          if (msg.attachments && msg.attachments.length > 0) {
              // Echo back attachment
