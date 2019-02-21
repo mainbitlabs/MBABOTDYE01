@@ -276,6 +276,8 @@ var Docs = {
                         Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
                     };
                     appendBorrado();
+                    //Vacía el descriptor para volver a ser utilizado
+                    Discriptor = {};
                     builder.Prompts.attachment(session, `**Adjunta aquí documento de ${Opts.Borrado}**`);
                 }
                 else{err} 
