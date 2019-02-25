@@ -316,15 +316,15 @@ var Docs = {
                          var buffer = new Buffer(response, 'base64');
                      blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'_'+session.dialogData.asociado+'.'+ctype, buffer,  function(error, result, response) {
                          if (!error) {
-                             console.log(Discriptor);
-                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
-                                 if (!err) {
-                                     console.log(`entity property ${session.dialogData.tipo} updated`);
-                                //  vacia el contenido del Discriptor para volver a ser usado
-                                 Discriptor = {};
-                                 }
-                                 else{err}
-                             });
+                            //  console.log(Discriptor);
+                            //  tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                            //      if (!err) {
+                            //          console.log(`entity property ${session.dialogData.tipo} updated`);
+                            //     //  vacia el contenido del Discriptor para volver a ser usado
+                            //      Discriptor = {};
+                            //      }
+                            //      else{err}
+                            //  });
                             
                              session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
                              builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
@@ -479,14 +479,14 @@ var Docs = {
                          var buffer = new Buffer(response, 'base64');
                      blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.dialogData.serie+'_'+session.dialogData.tipo+'_'+session.dialogData.asociado+'.'+ctype, buffer,  function(error, result, response) {
                              if (!error) {
-                             console.log(Discriptor);
-                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
-                                 if (!err) {
-                                     console.log(`entity property ${session.dialogData.tipo} updated`);
-                                 Discriptor = {};
-                                 }
-                                 else{err}
-                             });
+                            //  console.log(Discriptor);
+                            //  tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                            //      if (!err) {
+                            //          console.log(`entity property ${session.dialogData.tipo} updated`);
+                            //      Discriptor = {};
+                            //      }
+                            //      else{err}
+                            //  });
                              
                              session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
                              session.endConversation('Hemos terminado por ahora.');
