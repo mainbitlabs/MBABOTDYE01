@@ -174,7 +174,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
              };
-             appendResguardo();
+            //  appendResguardo();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
              break;
  
@@ -184,7 +184,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
              };
-             appendBorrado();
+            //  appendBorrado();
              session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
 
             //  builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
@@ -197,7 +197,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
              };
-             appendBaja();
+            //  appendBaja();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
              break;
  
@@ -208,7 +208,7 @@ var Docs = {
                  Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
                  
              };
-             appendCheck();
+            //  appendCheck();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
              break;
              
@@ -219,7 +219,7 @@ var Docs = {
                  Discriptor.HojaDeServicio = {'_': 'Hoja de Servicio Adjunto', '$':'Edm.String'};
                  
              };
-             appendHoja();
+            //  appendHoja();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Hoja}**`);
              break;
              
@@ -275,7 +275,7 @@ var Docs = {
                         Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                         Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
                     };
-                    appendBorrado();
+                    // appendBorrado();
                     //Vacía el descriptor para volver a ser utilizado
                     Discriptor = {};
                     builder.Prompts.attachment(session, `**Adjunta aquí documento de ${Opts.Borrado}**`);
@@ -417,7 +417,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
              };
-             appendResguardo();
+            //  appendResguardo();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
              break;
  
@@ -427,7 +427,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
              };
-             appendBorrado();
+            //  appendBorrado();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
              break;
  
@@ -437,7 +437,7 @@ var Docs = {
                  Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
                  Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
              };
-             appendBaja();
+            //  appendBaja();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
              break;
  
@@ -448,7 +448,7 @@ var Docs = {
                  Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
                  
              };
-             appendCheck();
+            //  appendCheck();
              builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
              break;
          }
