@@ -169,58 +169,97 @@ var Docs = {
          switch (selection2) {
  
              case Opts.Resguardo:
-             function appendResguardo() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-             };
-            //  appendResguardo();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
+             tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                if (!eror) {
+                    if(result.Resguardo._== "Aprobado" ){
+                        clearTimeout(time);
+                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                    }
+                    // else if(result.Resguardo._== "En validacion"){
+                    //     clearTimeout(time);
+                    //     session.endConversation("**No puedes adjuntar el archivo, el documento ya esta en proceso de validación.** \n**Hemos concluido por ahora.**");
+                    // }
+                    else{
+                        builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
+                    }                  
+                }
+                else{
+                    clearTimeout(time);
+                    session.endConversation("**Error** La serie no coincide con el Asociado.");
+                }
+                });
              break;
  
              case Opts.Borrado:
-             function appendBorrado() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
-             };
-            //  appendBorrado();
-             session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
-
-            //  builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
-
+             tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                if (!eror) {
+                    if(result.Borrado._== "Aprobado" ){
+                        clearTimeout(time);
+                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                    }
+                    else{
+                        session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
+                    }                  
+                }
+                else{
+                    clearTimeout(time);
+                    session.endConversation("**Error** La serie no coincide con el Asociado.");
+                }
+                });
              break;
  
              case Opts.Baja:
-             function appendBaja() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
-             };
-            //  appendBaja();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
+             tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                if (!eror) {
+                    if(result.Baja._== "Aprobado" ){
+                        clearTimeout(time);
+                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                    }
+                    else{
+                        builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
+                    }                  
+                }
+                else{
+                    clearTimeout(time);
+                    session.endConversation("**Error** La serie no coincide con el Asociado.");
+                }
+                });
              break;
  
              case Opts.Check:
-             function appendCheck() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
-                 
-             };
-            //  appendCheck();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
+             tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                if (!eror) {
+                    if(result.Check._== "Aprobado" ){
+                        clearTimeout(time);
+                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                    }
+                    else{
+                        builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
+                    }                  
+                }
+                else{
+                    clearTimeout(time);
+                    session.endConversation("**Error** La serie no coincide con el Asociado.");
+                }
+                });
              break;
              
              case Opts.Hoja:
-             function appendHoja() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.HojaDeServicio = {'_': 'Hoja de Servicio Adjunto', '$':'Edm.String'};
-                 
-             };
-            //  appendHoja();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Hoja}**`);
+             tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+                if (!eror) {
+                    if(result.HojaDeServicio._== "Aprobado" ){
+                        clearTimeout(time);
+                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                    }
+                    else{
+                        builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Hoja}**`);
+                    }                  
+                }
+                else{
+                    clearTimeout(time);
+                    session.endConversation("**Error** La serie no coincide con el Asociado.");
+                }
+                });
              break;
              
              case Motivos.Uno:
@@ -411,49 +450,138 @@ var Docs = {
          session.dialogData.Discriptor ={};
          switch (selection2) {
  
-             case Opts.Resguardo:
-             function appendResguardo() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Resguardo = {'_': 'Resguardo Adjunto', '$':'Edm.String'};
-             };
-            //  appendResguardo();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
-             break;
+            case Opts.Resguardo:
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+               if (!eror) {
+                   if(result.Resguardo._== "Aprobado" ){
+                       clearTimeout(time);
+                       session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                   }
+                   // else if(result.Resguardo._== "En validacion"){
+                   //     clearTimeout(time);
+                   //     session.endConversation("**No puedes adjuntar el archivo, el documento ya esta en proceso de validación.** \n**Hemos concluido por ahora.**");
+                   // }
+                   else{
+                       builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Resguardo}**`);
+                   }                  
+               }
+               else{
+                   clearTimeout(time);
+                   session.endConversation("**Error** La serie no coincide con el Asociado.");
+               }
+               });
+            break;
  
-             case Opts.Borrado:
-             function appendBorrado() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
-             };
-            //  appendBorrado();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Borrado}**`);
-             break;
+            case Opts.Borrado:
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+               if (!eror) {
+                   if(result.Borrado._== "Aprobado" ){
+                       clearTimeout(time);
+                       session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                   }
+                   else{
+                       session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
+                   }                  
+               }
+               else{
+                   clearTimeout(time);
+                   session.endConversation("**Error** La serie no coincide con el Asociado.");
+               }
+               });
+            break;
  
-             case Opts.Baja:
-             function appendBaja() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Baja = {'_': 'Baja Adjunto', '$':'Edm.String'};
-             };
-            //  appendBaja();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
-             break;
+            case Opts.Baja:
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+               if (!eror) {
+                   if(result.Baja._== "Aprobado" ){
+                       clearTimeout(time);
+                       session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                   }
+                   else{
+                       builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Baja}**`);
+                   }                  
+               }
+               else{
+                   clearTimeout(time);
+                   session.endConversation("**Error** La serie no coincide con el Asociado.");
+               }
+               });
+            break;
  
-             case Opts.Check:
-             function appendCheck() {
-                 Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
-                 Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
-                 Discriptor.Check = {'_': 'Check Adjunto', '$':'Edm.String'};
-                 
-             };
-            //  appendCheck();
-             builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
-             break;
+            case Opts.Check:
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+               if (!eror) {
+                   if(result.Check._== "Aprobado" ){
+                       clearTimeout(time);
+                       session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                   }
+                   else{
+                       builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Check}**`);
+                   }                  
+               }
+               else{
+                   clearTimeout(time);
+                   session.endConversation("**Error** La serie no coincide con el Asociado.");
+               }
+               });
+            break;
+            
+            case Opts.Hoja:
+            tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(eror, result, response) {
+               if (!eror) {
+                   if(result.HojaDeServicio._== "Aprobado" ){
+                       clearTimeout(time);
+                       session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
+                   }
+                   else{
+                       builder.Prompts.attachment(session, `**Adjunta aquí ${Opts.Hoja}**`);
+                   }                  
+               }
+               else{
+                   clearTimeout(time);
+                   session.endConversation("**Error** La serie no coincide con el Asociado.");
+               }
+               });
+            break;
          }
          
      },
+     function (session, results, next) {
+        // si el tipo es = borrado usa este diálogo
+        if (session.dialogData.tipo == 'Borrado') {
+            session.dialogData.sborrado = results.response;
+            var Serie = {}; //Objeto para actualizar serie borrada
+            function borrado() {
+                Serie.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                Serie.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                Serie.SerieBorrada = {'_': session.dialogData.sborrado, '$':'Edm.String'};
+                
+            };
+            borrado();
+            tableService.mergeEntity(config.table1, Serie, function(err, res, respons) {
+                if (!err) {
+                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                    function appendBorrado() {
+                        Discriptor.PartitionKey = {'_': session.dialogData.asociado, '$':'Edm.String'};
+                        Discriptor.RowKey = {'_': session.dialogData.serie, '$':'Edm.String'};
+                        Discriptor.Borrado = {'_': 'Borrado Adjunto', '$':'Edm.String'};
+                    };
+                    // appendBorrado();
+                    //Vacía el descriptor para volver a ser utilizado
+                    Discriptor = {};
+                    builder.Prompts.attachment(session, `**Adjunta aquí documento de ${Opts.Borrado}**`);
+                }
+                else{err} 
+            });
+            // session.send('elegiste Borrado');
+        }
+        else{ //si el tipo != borrado salta este diálogo
+            session.dialogData.comentarios = results.response;
+            console.log('Comentarios ', session.dialogData.comentarios);
+            console.log('Next function');
+            next();
+        }
+    },
      function (session) {
          // Sexto diálogo
          var msg = session.message;
