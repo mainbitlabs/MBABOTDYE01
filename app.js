@@ -51,7 +51,7 @@ var Docs = {
     Evidencia: 'Adjuntar Documentación',
     Incidente: 'Reportar Incidente'
  };
-
+var optsbutton = [];
  var Motivos = {
     Uno: 'Usuario',
     Dos: 'Documentos',
@@ -60,14 +60,8 @@ var Docs = {
     Cinco: 'Servicio',
  };
 
- var Opts = {
-    Resguardo : 'Resguardo',
-    Check: 'Check',
-    Baja: 'Baja',
-    Borrado: 'Borrado',
-    Hoja: 'HojaDeServicio'
- };
- 
+ var Opts = {};
+
  var time;
  // Variable Discriptor para actualizar tabla
  var Discriptor = {};
@@ -145,15 +139,48 @@ var Docs = {
          
      },
      function (session, results) {
-         // Cuarto diálogo
+         // Quinto diálogo
          var selection3 = results.response.entity;
          switch (selection3) {
              
              case Docs.Evidencia:
+             tableService.retrieveEntity(config.table4, "Proyecto", session.dialogData.proyecto, function(error, result, response) {
+                if(!error) {
+                    if (result.Baja._ == "X") {
+                        Opts.Baja="Baja";
+                        optsbutton.push(Opts.Baja);
+                    }
+                    if (result.Borrado._ == "X") {
+                        Opts.Borrado="Borrado";
+                        optsbutton.push(Opts.Borrado);
+                    }
+                    if (result.Check._ == "X") {
+                        Opts.Check="Check";
+                        optsbutton.push(Opts.Check);
+                    }
+                    if (result.Resguardo._ == "X") {
+                        Opts.Resguardo ="Resguardo";
+                        optsbutton.push(Opts.Resguardo);
+                    }
+                    if (result.HojaDeServicio._ == "X") {
+                        Opts.Hoja ="HojaDeServicio";
+                        optsbutton.push(Opts.Hoja);
+                    }
+                  console.log(optsbutton);
+                  console.log(Opts);
+                  builder.Prompts.choice(session, 'Que tipo de Evidencia o Documentación deseas adjuntar: ', optsbutton, {listStyle: builder.ListStyle.button});
+                  
+                } 
+                else{
+                   //  clearTimeout(time);
+                   //  session.endConversation("**Error**");
+                }
+            });
             //  session.send('aqui deben ir las opciones');
-             builder.Prompts.choice(session, 'Que tipo de Evidencia o Documentación deseas adjuntar: ',[Opts.Baja, Opts.Borrado, Opts.Check, Opts.Hoja, Opts.Resguardo],{listStyle: builder.ListStyle.button});
             //  builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Resguardo, Opts.Check,  Opts.Baja, Opts.Borrado, Opts.Hoja, Opts.Pospuesto], { listStyle: builder.ListStyle.button });  
-             break;
+            Opts={};
+            optsbutton=[]; 
+            break;
  
              case Docs.Incidente:
              session.beginDialog("incidente");
@@ -162,7 +189,7 @@ var Docs = {
          
      },
      function (session, results) {
-         // Quinto diálogo
+         // Sexto diálogo
          var selection2 = results.response.entity;
          session.dialogData.tipo = selection2;
          session.dialogData.Discriptor ={};
@@ -433,7 +460,7 @@ var Docs = {
          switch (selection3) {
              
              case Choice.Si:
-             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', [Opts.Baja, Opts.Borrado, Opts.Check, Opts.Hoja, Opts.Resguardo], { listStyle: builder.ListStyle.button });  
+             builder.Prompts.choice(session, '¿Que tipo de Evidencia o Documentación?', optsbutton, { listStyle: builder.ListStyle.button });  
              break;
  
              case Choice.No:
