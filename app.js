@@ -644,6 +644,7 @@ var optsbutton = [];
                             //  });
                              
                              session.send(`El archivo **${session.dialogData.proyecto}_${session.dialogData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                             clearTimeout(time);
                              session.endConversation('Hemos terminado por ahora.');
                          }
                          else{
