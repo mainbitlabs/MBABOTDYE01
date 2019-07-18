@@ -146,6 +146,8 @@ var optsbutton = [];
              case Docs.Evidencia:
              tableService.retrieveEntity(config.table4, "Proyecto", session.dialogData.proyecto, function(error, result, response) {
                 if(!error) {
+                    Opts.Ubicacion = "Reportar llegada a Sitio";
+                    optsbutton.push(Opts.Ubicacion);
                     if (result.Baja._ == "X") {
                         Opts.Baja="Baja";
                         optsbutton.push(Opts.Baja);
@@ -288,6 +290,11 @@ var optsbutton = [];
                 }
                 });
              break;
+             case Opts.Ubicacion:
+                // session.send("[Ubicación actual](https://mainbitlabs.github.io/)");
+                session.send("Comparte tu ubicación actual");
+                session.beginDialog('location');
+                break;
              
              case Motivos.Uno:
             session.dialogData.X = Motivos.Uno;
@@ -689,3 +696,72 @@ var optsbutton = [];
      session.dialogData.sborrado = results.response;
      session.endDialogWithResult({ response: session.dialogData.sborrado });}
 );
+bot.dialog("location", [
+    function (session) {
+       
+       if (session.message.text == "") { 
+        //    console.log("<<< Imposible >>>", session.message.entities);
+        // console.log("<<< core_company: "+ session.privateConversationData.company);
+        // console.log("<<< typeof_company: "+ typeof(session.privateConversationData.company));
+           console.log("<<< Session.message >>>", session.message);
+           console.log("<<< Latitude >>>", session.message.entities[0].geo.latitude);
+           console.log("<<< Longitude >>>", session.message.entities[0].geo.longitude);
+           var d = new Date();
+            var m = d.getMonth() + 1;
+            var fecha = d.getFullYear() + "-" + m + "-" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            // var descriptor = {
+            //     PartitionKey: {'_': session.dialogData.asociado, '$':'Edm.String'},
+            //     RowKey: {'_': session.dialogData.serie, '$':'Edm.String'},
+            //     Fecha: {'_': fecha, '$':'Edm.String'},
+            //     Latitud: {'_': session.message.entities[0].geo.latitude, '$':'Edm.String'},
+            //     Longitud: {'_': session.message.entities[0].geo.longitude, '$':'Edm.String'},
+            //     Historico: {'_': fecha +" "+ session.message.entities[0].geo.latitude + " " + session.message.entities[0].geo.longitude+"\n", '$':'Edm.String'},
+            //     GPS: {'_': 'https://www.google.com.mx/maps/search/ '+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude, '$':'Edm.String'},
+            // };
+            
+    
+    tableService.retrieveEntity(config.table1, session.dialogData.asociado, session.dialogData.serie, function(error, result, response) {
+        if (!error) {
+            
+            var merge = {
+                PartitionKey: {'_': session.dialogData.asociado, '$':'Edm.String'},
+                RowKey: {'_': session.dialogData.serie, '$':'Edm.String'},
+                Latitud: {'_': session.message.entities[0].geo.latitude, '$':'Edm.String'},
+                Longitud: {'_': session.message.entities[0].geo.longitude, '$':'Edm.String'},
+                GPS: {'_': 'https://www.google.com.mx/maps/search/ '+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude, '$':'Edm.String'}
+
+            };
+            
+
+                tableService.mergeEntity(config.table1, merge, function(err, res, respons) {
+                    if (!err) {
+                       console.log("Merge Entity Latitud y Longitud");
+                       clearTimeout(time);
+                       session.endConversation("Gracias, tu ubicación ha sido registrada.");
+                    }
+                    else{
+                    console.log(err);
+                    } 
+                });
+                
+          
+    
+        } else {
+            console.log(error);
+            
+        }
+    });
+
+
+                    
+                }else{
+                    console.log("<<< Session.message >>>", session.message);
+
+                    
+                }
+          
+            
+       } 
+    
+    
+]);
