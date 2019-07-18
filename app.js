@@ -111,7 +111,7 @@ var optsbutton = [];
              setTimeout(() => {
          tableService.retrieveEntity(config.table1, session.privateConversationData.asociado, session.privateConversationData.serie, function(eror, result, response) {
              if (!eror) {                    
-                 session.dialogData.proyecto= result.Proyecto._;
+                 session.privateConversationData.proyecto= result.Proyecto._;
                  session.send(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._} \n\n  **Hoja de Servicio:** ${result.HojaDeServicio._}`);
                  builder.Prompts.choice(session, 'Hola ¿Esta información es correcta?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });          
              }
@@ -144,7 +144,7 @@ var optsbutton = [];
          switch (selection3) {
              
              case Docs.Evidencia:
-             tableService.retrieveEntity(config.table4, "Proyecto", session.dialogData.proyecto, function(error, result, response) {
+             tableService.retrieveEntity(config.table4, "Proyecto", session.privateConversationData.proyecto, function(error, result, response) {
                 if(!error) {
                     Opts.Ubicacion = "Reportar llegada a Sitio";
                     optsbutton.push(Opts.Ubicacion);
@@ -193,8 +193,8 @@ var optsbutton = [];
      function (session, results) {
          // Sexto diálogo
          var selection2 = results.response.entity;
-         session.dialogData.tipo = selection2;
-         session.dialogData.Discriptor ={};
+         session.privateConversationData.tipo = selection2;
+         session.privateConversationData.Discriptor ={};
          switch (selection2) {
  
              case Opts.Resguardo:
@@ -227,7 +227,7 @@ var optsbutton = [];
                         session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     }
                     else{
-                        session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
+                        session.beginDialog('borrado', session.privateConversationData.sborrado);//Llama al dialogo externo "borrado"
                     }                  
                 }
                 else{
@@ -297,31 +297,31 @@ var optsbutton = [];
                 break;
              
              case Motivos.Uno:
-            session.dialogData.X = Motivos.Uno;
+            session.privateConversationData.X = Motivos.Uno;
              // Comentar detalles de Servicio Pospuesto
             builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
 
              case Motivos.Dos:
-             session.dialogData.X = Motivos.Dos;
+             session.privateConversationData.X = Motivos.Dos;
              // Comentar detalles de Servicio Pospuesto
              builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
              
              case Motivos.Tres:
-             session.dialogData.X = Motivos.Tres;
+             session.privateConversationData.X = Motivos.Tres;
              // Comentar detalles de Servicio Pospuesto
              builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
             
              case Motivos.Cuatro:
-             session.dialogData.X = Motivos.Cuatro;
+             session.privateConversationData.X = Motivos.Cuatro;
              // Comentar detalles de Servicio Pospuesto
              builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
              
              case Motivos.Cinco:
-             session.dialogData.X = Motivos.Cinco;
+             session.privateConversationData.X = Motivos.Cinco;
              // Comentar detalles de Servicio Pospuesto
              builder.Prompts.text(session, 'Escribe tus observaciones');
              break;
@@ -330,19 +330,19 @@ var optsbutton = [];
      },
      function (session, results, next) {
         // si el tipo es = borrado usa este diálogo
-        if (session.dialogData.tipo == 'Borrado') {
-            session.dialogData.sborrado = results.response;
+        if (session.privateConversationData.tipo == 'Borrado') {
+            session.privateConversationData.sborrado = results.response;
             var Serie = {}; //Objeto para actualizar serie borrada
             function borrado() {
                 Serie.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                 Serie.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
-                Serie.SerieBorrada = {'_': session.dialogData.sborrado, '$':'Edm.String'};
+                Serie.SerieBorrada = {'_': session.privateConversationData.sborrado, '$':'Edm.String'};
                 
             };
             borrado();
             tableService.mergeEntity(config.table1, Serie, function(err, res, respons) {
                 if (!err) {
-                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                    console.log(`entity property ${session.privateConversationData.tipo} updated`);
                     function appendBorrado() {
                         Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                         Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
@@ -358,8 +358,8 @@ var optsbutton = [];
             // session.send('elegiste Borrado');
         }
         else{ //si el tipo != borrado salta este diálogo
-            session.dialogData.comentarios = results.response;
-            console.log('Comentarios ', session.dialogData.comentarios);
+            session.privateConversationData.comentarios = results.response;
+            console.log('Comentarios ', session.privateConversationData.comentarios);
             console.log('Next function');
             next();
         }
@@ -387,19 +387,19 @@ var optsbutton = [];
                      (response) => {
                          // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                          var buffer = new Buffer(response, 'base64');
-                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.privateConversationData.serie+'_'+session.dialogData.tipo+'_'+session.privateConversationData.asociado+'.'+ctype, buffer,  function(error, result, response) {
+                     blobService.createBlockBlobFromText(config.blobcontainer, session.privateConversationData.proyecto+'_'+session.privateConversationData.serie+'_'+session.privateConversationData.tipo+'_'+session.privateConversationData.asociado+'.'+ctype, buffer,  function(error, result, response) {
                          if (!error) {
                             //  console.log(Discriptor);
                             //  tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                             //      if (!err) {
-                            //          console.log(`entity property ${session.dialogData.tipo} updated`);
+                            //          console.log(`entity property ${session.privateConversationData.tipo} updated`);
                             //     //  vacia el contenido del Discriptor para volver a ser usado
                             //      Discriptor = {};
                             //      }
                             //      else{err}
                             //  });
                             
-                             session.send(`El archivo **${session.dialogData.proyecto}_${session.privateConversationData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                             session.send(`El archivo **${session.privateConversationData.proyecto}_${session.privateConversationData.serie}_${session.privateConversationData.tipo}.${ctype}** se ha subido correctamente`);
                              builder.Prompts.choice(session, '¿Deseas adjuntar Evidencia o Documentación?', [Choice.Si, Choice.No], { listStyle: builder.ListStyle.button });
                          }
                          else{
@@ -424,8 +424,8 @@ var optsbutton = [];
                                 pass: `${config.pass}`,
                             }, from: `${config.email1}`,
                             to: `${config.email1}, ${config.email2}, ${config.email3}, ${config.email4}  `,
-                            subject: `${session.dialogData.proyecto} Incidente de ${session.dialogData.X}: ${session.privateConversationData.serie} / ${result.Servicio._}`,
-                            html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${session.dialogData.X}</b> <br> <b><blockquote>${session.dialogData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.dialogData.proyecto}</b>  <br> <b>Serie: ${session.privateConversationData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b>`
+                            subject: `${session.privateConversationData.proyecto} Incidente de ${session.privateConversationData.X}: ${session.privateConversationData.serie} / ${result.Servicio._}`,
+                            html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${session.privateConversationData.X}</b> <br> <b><blockquote>${session.privateConversationData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.privateConversationData.proyecto}</b>  <br> <b>Serie: ${session.privateConversationData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b>`
                            });
                     }
                     else{
@@ -440,13 +440,13 @@ var optsbutton = [];
                             function appendPospuesto() {
                                 Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                                 Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
-                                Discriptor.Pospuesto = {'_':dateNow +' '+session.dialogData.X +' '+ session.dialogData.comentarios+'\n'+result.Pospuesto._, '$':'Edm.String'};
+                                Discriptor.Pospuesto = {'_':dateNow +' '+session.privateConversationData.X +' '+ session.privateConversationData.comentarios+'\n'+result.Pospuesto._, '$':'Edm.String'};
                                 
                             };
                             appendPospuesto();
                             tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                                 if (!err) {
-                                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                                    console.log(`entity property ${session.privateConversationData.tipo} updated`);
                                 Discriptor = {};
                                 }
                                 else{err}
@@ -480,8 +480,8 @@ var optsbutton = [];
      function (session, results) {
          // Quinto diálogo
          var selection2 = results.response.entity;
-         session.dialogData.tipo = selection2;
-         session.dialogData.Discriptor ={};
+         session.privateConversationData.tipo = selection2;
+         session.privateConversationData.Discriptor ={};
          switch (selection2) {
  
             case Opts.Resguardo:
@@ -514,7 +514,7 @@ var optsbutton = [];
                        session.endConversation("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                    }
                    else{
-                       session.beginDialog('borrado', session.dialogData.sborrado);//Llama al dialogo externo "borrado"
+                       session.beginDialog('borrado', session.privateConversationData.sborrado);//Llama al dialogo externo "borrado"
                    }                  
                }
                else{
@@ -582,19 +582,19 @@ var optsbutton = [];
      },
      function (session, results, next) {
         // si el tipo es = borrado usa este diálogo
-        if (session.dialogData.tipo == 'Borrado') {
-            session.dialogData.sborrado = results.response;
+        if (session.privateConversationData.tipo == 'Borrado') {
+            session.privateConversationData.sborrado = results.response;
             var Serie = {}; //Objeto para actualizar serie borrada
             function borrado() {
                 Serie.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                 Serie.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
-                Serie.SerieBorrada = {'_': session.dialogData.sborrado, '$':'Edm.String'};
+                Serie.SerieBorrada = {'_': session.privateConversationData.sborrado, '$':'Edm.String'};
                 
             };
             borrado();
             tableService.mergeEntity(config.table1, Serie, function(err, res, respons) {
                 if (!err) {
-                    console.log(`entity property ${session.dialogData.tipo} updated`);
+                    console.log(`entity property ${session.privateConversationData.tipo} updated`);
                     function appendBorrado() {
                         Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                         Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
@@ -610,8 +610,8 @@ var optsbutton = [];
             // session.send('elegiste Borrado');
         }
         else{ //si el tipo != borrado salta este diálogo
-            session.dialogData.comentarios = results.response;
-            console.log('Comentarios ', session.dialogData.comentarios);
+            session.privateConversationData.comentarios = results.response;
+            console.log('Comentarios ', session.privateConversationData.comentarios);
             console.log('Next function');
             next();
         }
@@ -639,18 +639,18 @@ var optsbutton = [];
                      (response) => {
                          // console.log(response); //iVBORw0KGgoAAAANSwCAIA...
                          var buffer = new Buffer(response, 'base64');
-                     blobService.createBlockBlobFromText(config.blobcontainer, session.dialogData.proyecto+'_'+session.privateConversationData.serie+'_'+session.dialogData.tipo+'_'+session.privateConversationData.asociado+'.'+ctype, buffer,  function(error, result, response) {
+                     blobService.createBlockBlobFromText(config.blobcontainer, session.privateConversationData.proyecto+'_'+session.privateConversationData.serie+'_'+session.privateConversationData.tipo+'_'+session.privateConversationData.asociado+'.'+ctype, buffer,  function(error, result, response) {
                              if (!error) {
                             //  console.log(Discriptor);
                             //  tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
                             //      if (!err) {
-                            //          console.log(`entity property ${session.dialogData.tipo} updated`);
+                            //          console.log(`entity property ${session.privateConversationData.tipo} updated`);
                             //      Discriptor = {};
                             //      }
                             //      else{err}
                             //  });
                              
-                             session.send(`El archivo **${session.dialogData.proyecto}_${session.privateConversationData.serie}_${session.dialogData.tipo}.${ctype}** se ha subido correctamente`);
+                             session.send(`El archivo **${session.privateConversationData.proyecto}_${session.privateConversationData.serie}_${session.privateConversationData.tipo}.${ctype}** se ha subido correctamente`);
                              clearTimeout(time);
                              session.endConversation('Hemos terminado por ahora.');
                          }
@@ -693,8 +693,8 @@ var optsbutton = [];
      builder.Prompts.text(session, 'Ingresa el número de serie de borrado');
  },
  function (session, results) {
-     session.dialogData.sborrado = results.response;
-     session.endDialogWithResult({ response: session.dialogData.sborrado });}
+     session.privateConversationData.sborrado = results.response;
+     session.endDialogWithResult({ response: session.privateConversationData.sborrado });}
 );
 bot.dialog("location", [
     function (session) {
@@ -735,6 +735,16 @@ bot.dialog("location", [
 
                 tableService.mergeEntity(config.table1, merge, function(err, res, respons) {
                     if (!err) {
+                        // Correo Reporte de llegada a Sitio
+                        nodeoutlook.sendEmail({
+                            auth: {
+                                user: `${config.email1}`,
+                                pass: `${config.pass}`,
+                            }, from: `${config.email1}`,
+                            to: `${config.email3}, ${config.email5}`,
+                            subject: `${session.privateConversationData.proyecto} Check-In: ${session.privateConversationData.serie} / ${result.Servicio._}`,
+                            html: `<p>Se reporta la llegada al sitio:</p> <br><br> <b>Proyecto: ${session.privateConversationData.proyecto}</b>  <br> <b>Serie: ${session.privateConversationData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b> <br> <b>Mapa: ${result.GPS._}</b>`
+                           });
                        console.log("Merge Entity Latitud y Longitud");
                        clearTimeout(time);
                        session.endConversation("Gracias, tu ubicación ha sido registrada.");
