@@ -741,7 +741,7 @@ bot.dialog("location", [
                                 user: `${config.email1}`,
                                 pass: `${config.pass}`,
                             }, from: `${config.email1}`,
-                            to: `${config.email3}, ${config.email5}`,
+                            to: `${config.email3}, ${config.email2}`,
                             subject: `${session.privateConversationData.proyecto} Check-In: ${session.privateConversationData.serie} / ${result.Servicio._}`,
                             html: `<p>Se reporta la llegada al sitio:</p> <br><br> <b>Proyecto: ${session.privateConversationData.proyecto}</b>  <br> <b>Serie: ${session.privateConversationData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b> <br> <b>Mapa: <a href="https://www.google.com.mx/maps/search/${session.message.entities[0].geo.latitude}, ${session.message.entities[0].geo.longitude}">Ir al mapa</a> </b> `
                            });
