@@ -436,7 +436,9 @@ var optsbutton = [];
                 tableService.retrieveEntity(config.table1, session.privateConversationData.asociado, session.privateConversationData.serie, function(eror, result, response) {
                     if (!eror) {  
                         // Comentarios
-                        var dateNow = new Date().toLocaleString();
+                        var now = new Date();
+                            now.setHours(now.getHours()-6);
+                        var dateNow = now.toLocaleString();
                             function appendPospuesto() {
                                 Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
                                 Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
