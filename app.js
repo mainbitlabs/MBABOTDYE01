@@ -437,7 +437,7 @@ var optsbutton = [];
                     if (!eror) {  
                         // Comentarios
                         var now = new Date();
-                            now.setHours(now.getHours()-6);
+                            now.setHours(now.getHours()-5);
                         var dateNow = now.toLocaleString();
                             function appendPospuesto() {
                                 Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
