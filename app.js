@@ -725,12 +725,15 @@ bot.dialog("location", [
     tableService.retrieveEntity(config.table1, session.privateConversationData.asociado, session.privateConversationData.serie, function(error, result, response) {
         if (!error) {
             
+            var now = new Date();
+            now.setHours(now.getHours()-5);
+            var dateNow = now.toLocaleString();
             var merge = {
                 PartitionKey: {'_': session.privateConversationData.asociado, '$':'Edm.String'},
                 RowKey: {'_': session.privateConversationData.serie, '$':'Edm.String'},
                 Latitud: {'_': session.message.entities[0].geo.latitude, '$':'Edm.String'},
                 Longitud: {'_': session.message.entities[0].geo.longitude, '$':'Edm.String'},
-                GPS: {'_': 'https://www.google.com.mx/maps/search/'+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude, '$':'Edm.String'}
+                GPS: {'_': dateNow +'_'+ 'https://www.google.com.mx/maps/search/'+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude+'\n' + result.GPS._, '$':'Edm.String'}
 
             };
             
