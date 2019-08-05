@@ -705,9 +705,8 @@ bot.dialog("location", [
         //    console.log("<<< Imposible >>>", session.message.entities);
         // console.log("<<< core_company: "+ session.privateConversationData.company);
         // console.log("<<< typeof_company: "+ typeof(session.privateConversationData.company));
-        console.log("<<< Session >>>", session);
-           console.log("<<< Session.message >>>", session.message);
-           console.log("<<< SourceEvent.message.location >>>", session.message.sourceEvent.message.location);
+        // console.log("<<< Session >>>", session);
+           console.log("<<< Session.message.user >>>", session.message.user);
            console.log("<<< Latitude >>>", session.message.entities[0].geo.latitude);
            console.log("<<< Longitude >>>", session.message.entities[0].geo.longitude);
            var d = new Date();
