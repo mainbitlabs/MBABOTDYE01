@@ -707,6 +707,8 @@ bot.dialog("location", [
         // console.log("<<< typeof_company: "+ typeof(session.privateConversationData.company));
            console.log("<<< Session.message >>>", session.message);
            console.log("<<< SourceEvent.message.from >>>", session.message.sourceEvent.message.from);
+           console.log("<<< SourceEvent.message.chat >>>", session.message.sourceEvent.message.chat);
+           console.log("<<< SourceEvent.message.location >>>", session.message.sourceEvent.message.location);
            console.log("<<< Latitude >>>", session.message.entities[0].geo.latitude);
            console.log("<<< Longitude >>>", session.message.entities[0].geo.longitude);
            var d = new Date();
