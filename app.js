@@ -364,7 +364,7 @@ var optsbutton = [];
             next();
         }
     },
-     function (session, results) {
+     function (session) {
          // Sexto diálogo
          var msg = session.message;
          if (msg.attachments && msg.attachments.length > 0) {
@@ -417,50 +417,47 @@ var optsbutton = [];
          } else {
                 tableService.retrieveEntity(config.table1, session.privateConversationData.asociado, session.privateConversationData.serie, function(eror, result, response) {
                     if (!eror) {  
-                        // Correo de notificaciones 
-                        nodeoutlook.sendEmail({
-                            auth: {
-                                user: `${config.email1}`,
-                                pass: `${config.pass}`,
-                            }, from: `${config.email1}`,
-                            to: `${config.email1}, ${config.email2}, ${config.email3}, ${config.email4}  `,
-                            subject: `${session.privateConversationData.proyecto} Incidente de ${session.privateConversationData.X}: ${session.privateConversationData.serie} / ${result.Servicio._}`,
-                            html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${session.privateConversationData.X}</b> <br> <b><blockquote>${session.privateConversationData.comentarios}</blockquote></b> <br> <b>Proyecto: ${session.privateConversationData.proyecto}</b>  <br> <b>Serie: ${session.privateConversationData.serie}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b>`
-                           });
+                        // Update Comentarios Azure
+                        var now = new Date();
+                        now.setHours(now.getHours()-5);
+                        var dateNow = now.toLocaleString();
+                        function appendPospuesto() {
+                            Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
+                            Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
+                            Discriptor.Pospuesto = {'_':dateNow +' '+session.privateConversationData.X +' '+ session.privateConversationData.comentarios+'\n'+result.Pospuesto._, '$':'Edm.String'};
+                            
+                        };
+                        appendPospuesto();
+                        tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
+                            if (!err) {
+                                // Correo de Incidentes 
+                                nodeoutlook.sendEmail({
+                                    auth: {
+                                        user: `${config.email1}`,
+                                        pass: `${config.pass}`,
+                                    }, from: `${config.email1}`,
+                                    to: `${config.email1}, ${config.email2}, ${config.email3}, ${config.email4}  `,
+                                    subject: `${result.Proyecto._} Incidente de ${session.privateConversationData.X}: ${result.RowKey._} / ${result.Servicio._}`,
+                                    html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${session.privateConversationData.X}</b> <br> <b><blockquote>${session.privateConversationData.comentarios}</blockquote></b> <br> <b>Proyecto: ${result.Proyecto._}</b>  <br> <b>Serie: ${result.RowKey._}</b> <br> <b>Servicio: ${result.Servicio._}</b> <br> <b>Localidad: ${result.Localidad._}</b> <br> <b>Inmueble: ${result.Inmueble._}</b> <br> <b>Nombre de Usuario: ${result.NombreUsuario._}</b> <br> <b>Area: ${result.Area._}</b>`
+                                   });
+                                
+                                    console.log(`Incidente de "${session.privateConversationData.tipo}" actualizado y enviado por correo.`);
+                                   Discriptor = {};
+                                   clearTimeout(time);
+                                   session.endConversation("**Hemos terminado por ahora, Se enviarán tus observaciones por correo.**");
+                                   }
+                                   else{
+                                   console.log("Merge Entity Error: ",err);
+                                       
+                                   }
+                               });
                     }
                     else{
                         clearTimeout(time);
                         session.endConversation("**Error** La serie no coincide con el Asociado.");
                     }
                 });
-                tableService.retrieveEntity(config.table1, session.privateConversationData.asociado, session.privateConversationData.serie, function(eror, result, response) {
-                    if (!eror) {  
-                        // Comentarios
-                        var now = new Date();
-                            now.setHours(now.getHours()-5);
-                        var dateNow = now.toLocaleString();
-                            function appendPospuesto() {
-                                Discriptor.PartitionKey = {'_': session.privateConversationData.asociado, '$':'Edm.String'};
-                                Discriptor.RowKey = {'_': session.privateConversationData.serie, '$':'Edm.String'};
-                                Discriptor.Pospuesto = {'_':dateNow +' '+session.privateConversationData.X +' '+ session.privateConversationData.comentarios+'\n'+result.Pospuesto._, '$':'Edm.String'};
-                                
-                            };
-                            appendPospuesto();
-                            tableService.mergeEntity(config.table1, Discriptor, function(err, res, respons) {
-                                if (!err) {
-                                    console.log(`entity property ${session.privateConversationData.tipo} updated`);
-                                Discriptor = {};
-                                }
-                                else{err}
-                            });
-                       clearTimeout(time);
-                       session.endConversation("**Hemos terminado por ahora, Se enviarán tus observaciones por correo.**");
-                       
-                    }
-                    else{
-                        
-                    }
-                });
+                
          }
      },
      function (session, results) {
