@@ -731,8 +731,8 @@ bot.dialog("location", [
             var merge = {
                 PartitionKey: {'_': session.privateConversationData.asociado, '$':'Edm.String'},
                 RowKey: {'_': session.privateConversationData.serie, '$':'Edm.String'},
-                Latitud: {'_': session.message.entities[0].geo.latitude, '$':'Edm.String'},
-                Longitud: {'_': session.message.entities[0].geo.longitude, '$':'Edm.String'},
+                Latitud: {'_': toString(session.message.entities[0].geo.latitude), '$':'Edm.String'},
+                Longitud: {'_': toString(session.message.entities[0].geo.longitude), '$':'Edm.String'},
                 GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude+'\n' + result.GPS._, '$':'Edm.String'}
 
             };
