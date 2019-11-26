@@ -706,6 +706,8 @@ bot.dialog("location", [
            console.log("<<< Session.message.user >>>", session.message.user);
            console.log("<<< Latitude >>>", session.message.entities[0].geo.latitude);
            console.log("<<< Longitude >>>", session.message.entities[0].geo.longitude);
+           console.log("<<< Type of Latitude >>>", typeof session.message.entities[0].geo.latitude);
+           console.log("<<< Type of Longitude >>>", typeof session.message.entities[0].geo.longitude);
            var d = new Date();
             var m = d.getMonth() + 1;
             var fecha = d.getFullYear() + "-" + m + "-" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
