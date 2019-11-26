@@ -706,8 +706,7 @@ bot.dialog("location", [
            console.log("<<< Session.message.user >>>", session.message.user);
            console.log("<<< Latitude >>>", session.message.entities[0].geo.latitude);
            console.log("<<< Longitude >>>", session.message.entities[0].geo.longitude);
-           console.log("<<< Type of Latitude >>>", typeof session.message.entities[0].geo.latitude);
-           console.log("<<< Type of Longitude >>>", typeof session.message.entities[0].geo.longitude);
+
            var d = new Date();
             var m = d.getMonth() + 1;
             var fecha = d.getFullYear() + "-" + m + "-" + d.getDate() + "-" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
@@ -728,11 +727,15 @@ bot.dialog("location", [
             var now = new Date();
             now.setHours(now.getHours()-5);
             var dateNow = now.toLocaleString();
+            var lat = session.message.entities[0].geo.latitude.toString();
+            var long = session.message.entities[0].geo.longitude.toString();
+            console.log("<<< Type of Latitude >>>", typeof lat);
+            console.log("<<< Type of Longitude >>>", typeof long);
             var merge = {
                 PartitionKey: {'_': session.privateConversationData.asociado, '$':'Edm.String'},
                 RowKey: {'_': session.privateConversationData.serie, '$':'Edm.String'},
-                Latitud: {'_': toString(session.message.entities[0].geo.latitude), '$':'Edm.String'},
-                Longitud: {'_': toString(session.message.entities[0].geo.longitude), '$':'Edm.String'},
+                Latitud: {'_': lat, '$':'Edm.String'},
+                Longitud: {'_': long, '$':'Edm.String'},
                 GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ session.message.entities[0].geo.latitude + "," + session.message.entities[0].geo.longitude+'\n' + result.GPS._, '$':'Edm.String'}
 
             };
