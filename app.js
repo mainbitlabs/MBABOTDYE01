@@ -69,12 +69,63 @@ var optsbutton = [];
  bot.dialog('/', [
      function (session) {
          // Primer diálogo    
-         session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
+        //  session.send(`Hola bienvenido al Servicio Automatizado de Mainbit.`);
+        var msg = new builder.Message(session)
+    .addAttachment({
+        contentType: "application/vnd.microsoft.card.adaptive",
+        content: {
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "type": "AdaptiveCard",
+            "version": "1.0",
+            "body": [
+                {
+                    "type": "TextBlock",
+                    "text": "Atención",
+                    "weight": "Bolder",
+                    "color": "Attention",
+                    "size": "Large"
+                },
+                {
+                    "type": "Container",
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": "stretch",
+                                    "items": [
+                                        {
+                                            "type": "Image",
+                                            "altText": "",
+                                            "url": "https://raw.githubusercontent.com/esanchezlMBT/images/master/mainbit.jpg"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": "stretch",
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Este **Bot** dejará de dar servicio a partir del **25 de marzo de 2020.** Por lo que deberás comenzar a trabajar con el Bot **AsociadosMBT**.",
+                                            "wrap": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+});
+session.send(msg);
          session.send(`**Sugerencia:** Recuerda que puedes cancelar en cualquier momento escribiendo **"cancelar".** \n\n **Importante:** este bot tiene un ciclo de vida de 10 minutos, te recomendamos concluir la actividad antes de este periodo.`);
          builder.Prompts.text(session, 'Por favor, **escribe el Número de Serie del equipo.**');
-         time = setTimeout(() => {
-             session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
-         }, 600000);
+        //  time = setTimeout(() => {
+        //      session.endConversation(`**Lo sentimos ha transcurrido el tiempo estimado para completar esta actividad. Intentalo nuevamente.**`);
+        //  }, 600000);
      },
      function (session, results) {
          // Segundo diálogo
